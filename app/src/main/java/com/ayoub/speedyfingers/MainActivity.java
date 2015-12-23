@@ -1,5 +1,6 @@
 package com.ayoub.speedyfingers;
 
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -7,15 +8,20 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
 
-    int mIndex;
-    String mCurrentWord;
-    TextView textView;
-    EditText editText;
+    int mIndex, mScore, mKeyStroke;
+    EditText mEditText;
+    TextView mScoreText, mTimerTextView;
+    WheelView mWheelView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,37 +29,65 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        mScoreText = (TextView) findViewById(R.id.tv_score);
+        mTimerTextView = (TextView) findViewById(R.id.tv_timer);
+        mWheelView = (WheelView) findViewById(R.id.main_wv);
+
+        new CountDownTimer(30000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                mTimerTextView.setText(String.format("%d", millisUntilFinished / 1000));
+            }
+
+            public void onFinish() {
+                mTimerTextView.setText("done!");
+            }
+        }.start();
+
+
         String from = "Breakfast procuring nay end happiness allowance assurance frankness. Met simplicity nor difficulty unreserved who. Entreaties mr conviction dissimilar me astonished estimating cultivated. On no applauded exquisite my additions. Pronounce add boy estimable nay suspected. You sudden nay elinor thirty esteem temper. Quiet leave shy you gay off asked large style.";
         final String[] splitted = from.split(" ");
 
 
-        textView = (TextView) findViewById(R.id.text);
-        editText = (EditText) findViewById(R.id.edit);
+        mWheelView.setOffset(1);
+        mWheelView.setItems(Arrays.asList(splitted));
+        mWheelView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+        mWheelView.setSelection(mIndex);
+
+        mWheelView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
+            @Override
+            public void onSelected(int selectedIndex, String item) {
+                Log.d("natija", "selectedIndex: " + selectedIndex + ", item: " + item);
+            }
+        });
 
 
-        mask(splitted, 0);
+        mEditText = (EditText) findViewById(R.id.edit);
 
-        editText.addTextChangedListener(new TextWatcher() {
+        mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String currentWord = splitted[mIndex].substring(1, splitted[mIndex].length() - 1);
-
-
-                Log.d("natija", "text changed to = " + s.toString());
-                Log.d("natija", "splitted index = " + splitted[mIndex]);
-                Log.d("natija", "currentWord = " + currentWord);
-
-
-                if (currentWord.equalsIgnoreCase(s.toString())) {
-                    Log.d("natija", "boooo");
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
+                if (!text.toString().isEmpty()) {
+                    mKeyStroke++;
+                }
+                Log.d("natija", "key stroke " + mKeyStroke);
+                if (splitted[mIndex].equalsIgnoreCase(text.toString())) {
                     mIndex++;
-                    mask(splitted, mIndex);
-                    editText.setText("");
+                    mScore++;
+                    mEditText.setText("");
+                    mWheelView.setSelection(mIndex);
+                    mScoreText.setText(String.format("Score : %d", mScore));
                 }
             }
 
@@ -84,31 +118,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private void mask(String[] original, int index) {
-        try {
-            original[index - 1] = original[index - 1].replace("{", "");
-            original[index - 1] = original[index - 1].replace("}", "");
-        } catch (Exception ex) {
-            Log.e("natija", ex.getMessage());
-        }
-
-        original[index] = new StringBuilder().append("{").append(original[index]).append("}").toString();
-        String formatted = "";
-        for (String str : original) {
-            formatted += new StringBuilder().append(" ").append(str).toString();
-        }
-
-
-        CharSequence charSequence = ColorPhrase.from(formatted)
-                .withSeparator("{}")
-                .innerColor(0xFFE6454A)
-                .outerColor(0xFF666666)
-                .format();
-
-        textView.setText(charSequence);
-
     }
 }
