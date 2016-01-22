@@ -17,6 +17,7 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
+
     int mIndex, mScore, mKeyStroke;
     EditText mEditText;
     TextView mScoreText, mTimerTextView;
