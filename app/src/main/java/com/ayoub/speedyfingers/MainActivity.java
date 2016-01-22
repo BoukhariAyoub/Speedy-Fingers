@@ -1,62 +1,71 @@
 package com.ayoub.speedyfingers;
 
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnTouch;
+
 public class MainActivity extends AppCompatActivity {
 
-    int mIndex, mScore, mKeyStroke;
+    @Bind(R.id.edit)
     EditText mEditText;
-    TextView mScoreText, mTimerTextView;
+    @Bind(R.id.tv_score)
+    TextView mScoreText;
+    @Bind(R.id.tv_timer)
+    TextView mTimerTextView;
+    @Bind(R.id.main_wv)
     WheelView mWheelView;
+
+    int mIndex, mScore, mKeyStroke;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-
-        mScoreText = (TextView) findViewById(R.id.tv_score);
         mTimerTextView = (TextView) findViewById(R.id.tv_timer);
-        mWheelView = (WheelView) findViewById(R.id.main_wv);
 
-        new CountDownTimer(30000, 1000) {
+        new CountDownTimer(60000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 mTimerTextView.setText(String.format("%d", millisUntilFinished / 1000));
             }
 
             public void onFinish() {
-                mTimerTextView.setText("done!");
+                gameOver();
             }
         }.start();
 
 
-        String from = "Breakfast procuring nay end happiness allowance assurance frankness. Met simplicity nor difficulty unreserved who. Entreaties mr conviction dissimilar me astonished estimating cultivated. On no applauded exquisite my additions. Pronounce add boy estimable nay suspected. You sudden nay elinor thirty esteem temper. Quiet leave shy you gay off asked large style.";
+        String from = "Breakfast procuring nay end happiness allowance assurance frankness Met simplicity nor difficulty unreserved who Entreaties mr conviction dissimilar me astonished estimating cultivated. On no applauded exquisite my additions. Pronounce add boy estimable nay suspected. You sudden nay elinor thirty esteem temper. Quiet leave shy you gay off asked large style.";
         final String[] splitted = from.split(" ");
 
 
         mWheelView.setOffset(1);
         mWheelView.setItems(Arrays.asList(splitted));
-        mWheelView.setOnTouchListener(new View.OnTouchListener() {
+
+
+         /*      mWheelView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return true;
             }
-        });
+        }); */
 
         mWheelView.setSelection(mIndex);
 
@@ -67,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        mEditText = (EditText) findViewById(R.id.edit);
 
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -98,6 +105,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @OnTouch(R.id.main_wv) boolean onTouch() {
+        Toast.makeText(this, "Touched!", Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -118,5 +130,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void gameOver(){
+        mTimerTextView.setText("done!");
     }
 }
