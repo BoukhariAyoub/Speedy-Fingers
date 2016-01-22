@@ -1,15 +1,14 @@
 package com.ayoub.speedyfingers;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.widget.TextView;
+
+import xyz.hanks.library.SmallBang;
 
 public class Main2Activity extends AppCompatActivity {
 
-    private long time;
+    private long time = 30000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,16 +17,22 @@ public class Main2Activity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final SmallBang mSmallBang = SmallBang.attach2Window(this);
+
+
         final WaveLoadingView waveLoadingView = (WaveLoadingView) findViewById(R.id.waveLoadingView);
-        final TextView textView = (TextView) findViewById(R.id.txt);
         waveLoadingView.setProgressValue(100);
+
+      //  waveLoadingView.startCountDown(this,time);
+
+   //     waveLoadingView.getmCountDownTimer().start();
 
 
         String from = "Breakfast procuring nay end happiness allowance assurance frankness. Met simplicity nor difficulty unreserved who. Entreaties mr conviction dissimilar me astonished estimating cultivated. On no applauded exquisite my additions. Pronounce add boy estimable nay suspected. You sudden nay elinor thirty esteem temper. Quiet leave shy you gay off asked large style.";
         final String[] splitted = from.split(" ");
 
 
-        new CountDownTimer(time, 1000) {
+   /*     new CountDownTimer(time, 1000) {
             int countseconds = 0;
 
             public void onTick(long millisUntilFinished) {
@@ -36,8 +41,6 @@ public class Main2Activity extends AppCompatActivity {
 
             public void onFinish() {
                 waveLoadingView.setCenterTitle("done! ");
-                Log.d("natija", "seconds = " + countseconds);
-
             }
         }.start();
 
@@ -52,10 +55,11 @@ public class Main2Activity extends AppCompatActivity {
 
             public void onFinish() {
                 waveLoadingView.setCenterTitle("done! ");
+                mSmallBang.bang(waveLoadingView);
                 Log.d("natija", "updates = " + count);
 
             }
-        }.start();
+        }.start(); */
     }
 
 }

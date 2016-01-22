@@ -3,6 +3,7 @@ package com.ayoub.speedyfingers;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -12,12 +13,16 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+
+import xyz.hanks.library.SmallBang;
 
 public class WaveLoadingView extends View {
     /**
@@ -39,7 +44,7 @@ public class WaveLoadingView extends View {
     private static final float DEFAULT_WATER_LEVEL_RATIO = 0.5f;
     private static final float DEFAULT_WAVE_LENGTH_RATIO = 1.0f;
     private static final float DEFAULT_WAVE_SHIFT_RATIO = 0.0f;
-    private static final int DEFAULT_WAVE_PROGRESS_VALUE = 50;
+    private static final int DEFAULT_WAVE_PROGRESS_VALUE = 100;
     private static final int DEFAULT_WAVE_COLOR = Color.parseColor("#212121");
     private static final int DEFAULT_TITLE_COLOR = Color.parseColor("#212121");
     private static final float DEFAULT_BORDER_WIDTH = 0;
@@ -54,6 +59,7 @@ public class WaveLoadingView extends View {
         CIRCLE,
         SQUARE
     }
+
 
     // Dynamic Properties.
     private int mCanvasSize;
@@ -161,6 +167,31 @@ public class WaveLoadingView extends View {
         mBottomTitlePaint.setAntiAlias(true);
         mBottomTitlePaint.setTextSize(attributes.getDimension(R.styleable.WaveLoadingView_mlv_titleBottomSize, sp2px(DEFAULT_TITLE_BOTTOM_SIZE)));
         mBottomTitle = attributes.getString(R.styleable.WaveLoadingView_mlv_titleBottom);
+
+        //Init CountDown
+
+
+
+    }
+
+    public void startCountDown(final Activity activity,long time, final WordsAdapter adapter){
+        new CountDownTimer(time, time / 100) {
+            int count = 1;
+
+            public void onTick(long millisUntilFinished) {
+                count++;
+                setProgressValue(100 - count);
+                Log.d("natija", "count" + count);
+            }
+
+            public void onFinish() {
+                setCenterTitle("done! ");
+                Log.d("natija", "done count" + count);
+                SmallBang.attach2Window(activity).bang(WaveLoadingView.this);
+                adapter.replaceItem(WordsAdapter.currentIndex);
+                this.cancel();
+            }
+        }.start();
     }
 
     @Override
@@ -411,12 +442,12 @@ public class WaveLoadingView extends View {
     public void setProgressValue(int progress) {
         mProgressValue = progress;
         if (progress > 50) {
-            setWaveColor(ContextCompat.getColor(getContext(),R.color.md_light_green_500));
+            setWaveColor(ContextCompat.getColor(getContext(), R.color.md_light_green_500));
         } else if (progress > 20) {
-            setWaveColor(ContextCompat.getColor(getContext(),R.color.md_lime_500));
+            setWaveColor(ContextCompat.getColor(getContext(), R.color.md_lime_500));
 
         } else {
-            setWaveColor(ContextCompat.getColor(getContext(),R.color.md_red_500));
+            setWaveColor(ContextCompat.getColor(getContext(), R.color.md_red_500));
         }
         ObjectAnimator waterLevelAnim = ObjectAnimator.ofFloat(this, "waterLevelRatio", mWaterLevelRatio, 1f - ((float) progress / 100));
         waterLevelAnim.setDuration(1000);
