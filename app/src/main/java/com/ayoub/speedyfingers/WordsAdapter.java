@@ -16,16 +16,23 @@ import java.util.Random;
 public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHolder> {
 
     ArrayList<String> wordList;
+    ArrayList<String> fourList;
     Activity activity;
     long time;
 
     public static int currentIndex = 3;
 
+    @Override
+    public void onViewRecycled(WordsViewHolder holder) {
+        super.onViewRecycled(holder);
+    }
 
     public WordsAdapter(ArrayList<String> wordList, Activity activity, long time) {
         this.wordList = wordList;
         this.activity = activity;
         this.time = time;
+        fourList = (ArrayList<String>) wordList.clone();
+        fourList = new ArrayList<>(fourList.subList(0, 4));
     }
 
     @Override
@@ -36,21 +43,24 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
     @Override
     public void onBindViewHolder(WordsViewHolder holder, int position) {
-        holder.waveLoadingView.setCenterTitle(wordList.get(position));
+        Log.d("natija", "onBindViewHolder " + position);
+        holder.waveLoadingView.setCenterTitle(fourList.get(position));
         long time = new Random().nextInt(20000) + 10000;
-
-        holder.waveLoadingView.startCountDown(activity, time, this);
+        holder.waveLoadingView.invalidate();
+        holder.waveLoadingView.startCountDown(activity,time,position, this);
 
     }
 
     public void replaceItem(final int pos) {
-
         Log.d("natija", "size = " + wordList.size() + "; pos = " + pos + "; current " + currentIndex);
+
 
         if (currentIndex < wordList.size() - 1) {
             currentIndex++;
-            wordList.set(pos, wordList.get(currentIndex));
+            fourList.set(pos, wordList.get(currentIndex));
             notifyItemChanged(pos);
+            Log.d("natija", "replaceItem entred");
+
         }
 
     }
@@ -58,7 +68,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
     @Override
     public int getItemCount() {
-        return 4;
+        return fourList.size();
     }
 
     public static class WordsViewHolder extends RecyclerView.ViewHolder {

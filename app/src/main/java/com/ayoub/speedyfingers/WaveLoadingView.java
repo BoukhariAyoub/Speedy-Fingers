@@ -17,7 +17,6 @@ import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
@@ -171,25 +170,21 @@ public class WaveLoadingView extends View {
         //Init CountDown
 
 
-
     }
 
-    public void startCountDown(final Activity activity,long time, final WordsAdapter adapter){
+    public void startCountDown(final Activity activity, long time, final int position, final WordsAdapter adapter) {
         new CountDownTimer(time, time / 100) {
             int count = 1;
 
             public void onTick(long millisUntilFinished) {
                 count++;
                 setProgressValue(100 - count);
-                Log.d("natija", "count" + count);
             }
 
             public void onFinish() {
                 setCenterTitle("done! ");
-                Log.d("natija", "done count" + count);
                 SmallBang.attach2Window(activity).bang(WaveLoadingView.this);
-                adapter.replaceItem(WordsAdapter.currentIndex);
-                this.cancel();
+                adapter.replaceItem(position);
             }
         }.start();
     }
