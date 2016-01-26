@@ -17,6 +17,7 @@ import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
@@ -175,17 +176,21 @@ public class WaveLoadingView extends View {
 
     public void startCountDown(final Activity activity, long time, final int position, final WordsAdapter adapter) {
         mCountDownTimer = new CountDownTimer(time, time / 100) {
-            int count = 1;
+            int count = -1;
 
             @Override
             public void onTick(long millisUntilFinished) {
                 count += 1;
-                setProgressValue(100 - count);
+                if (count % 10 == 0) {
+                    setProgressValue(100 - count);
+                    Log.d("natija", "pos = " + position + "; millisUntilFinished = " + millisUntilFinished + "; progress = " + getProgressValue());
+                }
             }
 
             @Override
             public void onFinish() {
-                if(adapter.isPause){
+                Log.d("natija done", "count = " + count + ";pos = " + position + "; progress = " + getProgressValue());
+                if (adapter.isPause) {
                     this.cancel();
                     return;
                 }
@@ -195,12 +200,6 @@ public class WaveLoadingView extends View {
             }
         }.start();
 
-    }
-
-    public void reInit(){
-        if (mCountDownTimer != null){
-            mCountDownTimer.cancel();
-        }
     }
 
 
@@ -588,7 +587,7 @@ public class WaveLoadingView extends View {
     }
 
     private void cancel() {
-        if(mCountDownTimer!=null){
+        if (mCountDownTimer != null) {
             mCountDownTimer.cancel();
         }
         if (mAnimatorSet != null) {
