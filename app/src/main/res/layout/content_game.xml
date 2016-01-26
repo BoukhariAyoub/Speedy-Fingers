@@ -8,7 +8,7 @@
     tools:context="com.ayoub.speedyfingers.GameActivity"
     tools:showIn="@layout/activity_game">
 
-    <com.ayoub.speedyfingers.AutofitRecyclerView
+    <com.ayoub.speedyfingers.AutoFitRecyclerView
         android:id="@+id/recycler"
         android:columnWidth="100dp"
         android:clipToPadding="false"

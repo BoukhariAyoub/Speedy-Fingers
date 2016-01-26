@@ -24,7 +24,7 @@ public class GameActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        AutofitRecyclerView recyclerView = (AutofitRecyclerView) findViewById(R.id.recycler);
+        AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         // GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         //  recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
