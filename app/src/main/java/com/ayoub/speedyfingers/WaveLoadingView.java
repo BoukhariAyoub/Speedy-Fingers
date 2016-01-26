@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Shader;
-import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -21,6 +20,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+
+import com.badoo.mobile.util.WeakHandler;
 
 import xyz.hanks.library.SmallBang;
 
@@ -169,37 +170,6 @@ public class WaveLoadingView extends View {
         mBottomTitle = attributes.getString(R.styleable.WaveLoadingView_mlv_titleBottom);
 
         //Init CountDown
-    }
-
-    CountDownTimer mCountDownTimer;
-
-
-    public void startCountDown(final Activity activity, long time, final int position, final WordsAdapter adapter) {
-        mCountDownTimer = new CountDownTimer(time, time / 100) {
-            int count = -1;
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-                count += 1;
-                if (count % 10 == 0) {
-                    setProgressValue(100 - count);
-                    Log.d("natija", "pos = " + position + "; millisUntilFinished = " + millisUntilFinished + "; progress = " + getProgressValue());
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                Log.d("natija done", "count = " + count + ";pos = " + position + "; progress = " + getProgressValue());
-                if (adapter.isPause) {
-                    this.cancel();
-                    return;
-                }
-                SmallBang.attach2Window(activity).bang(WaveLoadingView.this);
-                SwissArmyKnife.playSound(getContext(), R.raw.mario);
-                adapter.replaceItem(position);
-            }
-        }.start();
-
     }
 
 
@@ -461,7 +431,7 @@ public class WaveLoadingView extends View {
         ObjectAnimator waterLevelAnim = ObjectAnimator.ofFloat(this, "waterLevelRatio", mWaterLevelRatio, 1f - ((float) progress / 100));
         waterLevelAnim.setDuration(1000);
         waterLevelAnim.setInterpolator(new DecelerateInterpolator());
-        AnimatorSet animatorSetProgress = new AnimatorSet();
+        final AnimatorSet animatorSetProgress = new AnimatorSet();
         animatorSetProgress.play(waterLevelAnim);
         animatorSetProgress.start();
     }
@@ -586,14 +556,6 @@ public class WaveLoadingView extends View {
         mAnimatorSet.play(waveShiftAnim);
     }
 
-    private void cancel() {
-        if (mCountDownTimer != null) {
-            mCountDownTimer.cancel();
-        }
-        if (mAnimatorSet != null) {
-            mAnimatorSet.end();
-        }
-    }
 
     @Override
     protected void onAttachedToWindow() {
@@ -664,5 +626,61 @@ public class WaveLoadingView extends View {
         mCenterTitlePaint.setTextSize(lo);
     }
 
+    // CountDownTimer mCountDownTimer;
+    PreciseCountdown mCountDownTimer;
+    WeakHandler mHandler = new WeakHandler();//Looper.getMainLooper()
+
+
+    public void startCountDown(final Activity activity, final long time, final int position, final WordsAdapter adapter) {
+        mCountDownTimer = new PreciseCountdown(time, time / 10) {
+            int count = 0;
+
+            @Override
+            public void onTick(final long timeLeft) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        count += 10;
+                        setProgressValue(100 - count);
+                        Log.d("natija", "pos = " + position + "; millisUntilFinished = " + timeLeft + "; progress = " + getProgressValue());
+                    }
+                });
+            }
+
+            @Override
+            public void onFinished() {
+                Log.d("natija done", "count = " + count + ";pos = " + position + "; progress = " + getProgressValue());
+
+                if (adapter.isPause) {
+                    this.cancel();
+                    return;
+                }
+
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SmallBang.attach2Window(activity).bang(WaveLoadingView.this);
+                        //  SwissArmyKnife.playSound(getContext(), R.raw.mario);
+                        adapter.replaceItem(position);
+
+                    }
+                });
+            }
+        };
+        mCountDownTimer.start();
+
+    }
+
+    private void cancel() {
+        if (mCountDownTimer != null) {
+            mCountDownTimer.cancel();
+            mCountDownTimer.stop();
+            mCountDownTimer.dispose();
+            mHandler.removeCallbacksAndMessages(null);
+        }
+        if (mAnimatorSet != null) {
+            mAnimatorSet.end();
+        }
+    }
 
 }

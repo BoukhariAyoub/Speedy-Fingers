@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
@@ -14,21 +15,35 @@ public class DismissHandleEditText extends EditText {
 
     public DismissHandleEditText(Context context) {
         super(context);
+        init();
     }
 
     public DismissHandleEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+
     }
 
     public DismissHandleEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
+
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public DismissHandleEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init();
+
     }
-    
+
+    private void init() {
+        setGravity(Gravity.CENTER_HORIZONTAL);
+        setTextSize(30);
+        setFocusableInTouchMode(true);
+        requestFocus();
+    }
+
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK
@@ -37,4 +52,20 @@ public class DismissHandleEditText extends EditText {
         }
         return super.dispatchKeyEvent(event);
     }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DEL) {
+            this.setText("");
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onEditorAction(int actionCode) {
+        super.onEditorAction(actionCode);
+    }
+
+
 }

@@ -5,10 +5,10 @@ package com.ayoub.speedyfingers;
  */
 public class Constants {
 
-    public static long COUNTDOWN_TIME_EASY = 15000;
-    public static long COUNTDOWN_TIME_MEDIUM = 10000;
-    public static long COUNTDOWN_TIME_HARD = 7000;
-    public static long COUNTDOWN_TIME_EXTREME = 5000;
+    public static long COUNTDOWN_TIME_EASY = 12000;
+    public static long COUNTDOWN_TIME_MEDIUM = 9000;
+    public static long COUNTDOWN_TIME_HARD = 6000;
+    public static long COUNTDOWN_TIME_EXTREME = 3000;
 
 
     

@@ -21,7 +21,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     long time;
 
 
-    public static int currentIndex = 2;
+    public static int currentIndex = 0;
     boolean isPause = false;
 
     @Override
@@ -48,7 +48,6 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     public void onBindViewHolder(WordsViewHolder holder, int position) {
         Log.d("natija", "onBindViewHolder " + position);
         holder.waveLoadingView.setCenterTitle(subList.get(position));
-        long time = Constants.COUNTDOWN_TIME_HARD;
         if (holder.waveLoadingView.mCountDownTimer != null) {
             holder.waveLoadingView.mCountDownTimer.cancel();
         }
@@ -99,6 +98,10 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
         public WordsViewHolder(View itemView) {
             super(itemView);
             waveLoadingView = (WaveLoadingView) itemView.findViewById(R.id.waveLoadingView);
+            int width = 5000;
+            int height = 5000;
+          //  waveLoadingView.getLayoutParams().height = height;
+           // waveLoadingView.getLayoutParams().width = width;
         }
     }
 

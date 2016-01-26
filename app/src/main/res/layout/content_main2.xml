@@ -14,39 +14,27 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <com.ayoub.speedyfingers.WaveLoadingView
-            android:id="@+id/waveLoadingView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:padding="5dp"
-            app:mlv_borderColor="@color/accent"
-            app:mlv_borderWidth="3dp"
-            app:mlv_progressValue="100"
-            app:mlv_shapeType="circle"
-            app:mlv_titleCenter="Center Title nnnn"
-            app:mlv_titleCenterColor="@color/primary_text"
-            app:mlv_titleCenterSize="20sp"
-            app:mlv_waveAmplitude="60" />
+       <Button
+           android:id="@+id/btn_easy"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="Easy"/>
 
-        <com.ayoub.speedyfingers.WaveLoadingView
-            android:id="@+id/waveLoadingView2"
+        <Button
+            android:id="@+id/btn_medium"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:padding="5dp"
-            app:mlv_borderColor="@color/primary_light"
-            app:mlv_borderWidth="3dp"
-            app:mlv_progressValue="100"
-            app:mlv_shapeType="circle"
-            app:mlv_titleCenter="Center Title"
-            app:mlv_titleCenterColor="@color/primary_text"
-            app:mlv_titleCenterSize="20sp"
-            app:mlv_waveAmplitude="60" />
+            android:layout_height="wrap_content"
+            android:text="Medium"/>
+
+        <Button
+            android:id="@+id/btn_hard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hard"/>
+
 
     </LinearLayout>
 

@@ -2,6 +2,8 @@ package com.ayoub.speedyfingers;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,7 +11,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -24,9 +25,10 @@ public class GameActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
-        // GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        //  recyclerView.setLayoutManager(layoutManager);
+      //  AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
+        RecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
+         GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
+          recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
 
 
@@ -35,17 +37,21 @@ public class GameActivity extends AppCompatActivity {
         final String[] splitted = from.split(";");
 
         final ArrayList<String> wordsList = new ArrayList<>(Arrays.asList(splitted));
-      //  SwissArmyKnife.randomizeList(wordsList);
+        //  SwissArmyKnife.randomizeList(wordsList);
 
 
-        Random random = new Random();
-        long time = random.nextInt(30000) + 10000;
-
+        long time = getIntent().getLongExtra("time", 0);
+        Log.d("test", "time = " + time);
         mAdapter = new WordsAdapter(wordsList, this, time);
         recyclerView.setAdapter(mAdapter);
 
 
         final DismissHandleEditText mEditText = (DismissHandleEditText) findViewById(R.id.edit);
+
+        mEditText.setFocusableInTouchMode(true);
+        mEditText.requestFocus();
+
+
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -76,8 +82,8 @@ public class GameActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mAdapter.pauseCountDown();
-      //  finish();
-      //  startActivity(new Intent(this,MainActivity.class));
+        //  finish();
+        //  startActivity(new Intent(this,MainActivity.class));
         Log.d("natija state", "onPause");
     }
 
@@ -85,8 +91,8 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-       // mAdapter.pauseCountDown();
-      //  finish();
+        // mAdapter.pauseCountDown();
+        //  finish();
         Log.d("natija state", "onStop");
     }
 
@@ -96,7 +102,6 @@ public class GameActivity extends AppCompatActivity {
         mAdapter.resumeCountDown();
         Log.d("natija state", "onResume");
     }
-
 
 
 }
