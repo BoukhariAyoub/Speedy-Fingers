@@ -168,26 +168,41 @@ public class WaveLoadingView extends View {
         mBottomTitle = attributes.getString(R.styleable.WaveLoadingView_mlv_titleBottom);
 
         //Init CountDown
-
-
     }
 
+    CountDownTimer mCountDownTimer;
+
+
     public void startCountDown(final Activity activity, long time, final int position, final WordsAdapter adapter) {
-        new CountDownTimer(time, time / 100) {
+        mCountDownTimer = new CountDownTimer(time, time / 100) {
             int count = 1;
 
+            @Override
             public void onTick(long millisUntilFinished) {
-                count++;
+                count += 1;
                 setProgressValue(100 - count);
             }
 
+            @Override
             public void onFinish() {
-                setCenterTitle("done! ");
+                if(adapter.isPause){
+                    this.cancel();
+                    return;
+                }
                 SmallBang.attach2Window(activity).bang(WaveLoadingView.this);
+                SwissArmyKnife.playSound(getContext(), R.raw.mario);
                 adapter.replaceItem(position);
             }
         }.start();
+
     }
+
+    public void reInit(){
+        if (mCountDownTimer != null){
+            mCountDownTimer.cancel();
+        }
+    }
+
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -573,6 +588,9 @@ public class WaveLoadingView extends View {
     }
 
     private void cancel() {
+        if(mCountDownTimer!=null){
+            mCountDownTimer.cancel();
+        }
         if (mAnimatorSet != null) {
             mAnimatorSet.end();
         }

@@ -2,6 +2,7 @@ package com.ayoub.speedyfingers;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -9,9 +10,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Created by Administrateur on 19/12/2015.
@@ -95,6 +99,16 @@ public abstract class SwissArmyKnife {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void randomizeList(ArrayList list){
+        long seed = System.nanoTime();
+        Collections.shuffle(list, new Random(seed));
+    }
+
+    public static void playSound(Context context,int sound){
+        final MediaPlayer mp = MediaPlayer.create(context,sound);
+        mp.start();
     }
 
 

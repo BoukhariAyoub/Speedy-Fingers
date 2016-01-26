@@ -8,15 +8,18 @@
     tools:context="com.ayoub.speedyfingers.GameActivity"
     tools:showIn="@layout/activity_game">
 
-    <android.support.v7.widget.RecyclerView
+    <com.ayoub.speedyfingers.AutofitRecyclerView
         android:id="@+id/recycler"
+        android:columnWidth="100dp"
+        android:clipToPadding="false"
         android:background="@color/accent"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/edit"/>
+        android:layout_height="200dp"
+        android:layout_above="@+id/edit"
+        />
 
-    <EditText
+    <com.ayoub.speedyfingers.DismissHandleEditText
         android:id="@+id/edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

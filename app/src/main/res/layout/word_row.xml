@@ -2,8 +2,8 @@
 <com.ayoub.speedyfingers.WaveLoadingView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/waveLoadingView"
-    android:layout_width="500dp"
-    android:layout_height="500dp"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
     android:layout_margin="10dp"
     android:padding="10dp"
     app:mlv_borderColor="@color/md_grey_300"
@@ -13,4 +13,4 @@
     app:mlv_titleCenter="Center Title TITLE"
     app:mlv_titleCenterColor="@color/primary_text"
     app:mlv_titleCenterSize="20sp"
-    app:mlv_waveAmplitude="60" />
+    app:mlv_waveAmplitude="10" />
