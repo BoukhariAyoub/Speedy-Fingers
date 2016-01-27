@@ -12,6 +12,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import jp.wasabeef.recyclerview.animators.FadeInAnimator;
+
 public class GameActivity extends AppCompatActivity {
 
 
@@ -25,24 +27,24 @@ public class GameActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-      //  AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
+        // AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         RecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
-         GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
-          recyclerView.setLayoutManager(layoutManager);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(new FadeInAnimator());
 
 
         String from = SwissArmyKnife.getStringFromFile(this, "eng.txt", ";");
         assert from != null;
-        final String[] splitted = from.split(";");
+        String[] splitted = from.split(";");
 
         final ArrayList<String> wordsList = new ArrayList<>(Arrays.asList(splitted));
         //  SwissArmyKnife.randomizeList(wordsList);
 
 
         long time = getIntent().getLongExtra("time", 0);
-        Log.d("test", "time = " + time);
-        mAdapter = new WordsAdapter(wordsList, this, time);
+        mAdapter = new WordsAdapter(wordsList, this, time,layoutManager,recyclerView);
         recyclerView.setAdapter(mAdapter);
 
 
@@ -63,11 +65,11 @@ public class GameActivity extends AppCompatActivity {
                 if (!text.toString().isEmpty()) {
                     mKeyStroke++;
                 }
-                Log.d("natija", "key stroke " + mKeyStroke);
+             //   Log.d("natija", "key stroke " + mKeyStroke);
                 if (mAdapter.isWordHit(text.toString())) {
                     mScore++;
                     mEditText.setText("");
-                    //  mScoreText.setText(String.format("Score : %d", mScore));
+
                 }
             }
 
@@ -81,7 +83,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mAdapter.pauseCountDown();
+        mAdapter.cancel();
         //  finish();
         //  startActivity(new Intent(this,MainActivity.class));
         Log.d("natija state", "onPause");
@@ -91,7 +93,7 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        // mAdapter.pauseCountDown();
+        // mAdapter.cancel();
         //  finish();
         Log.d("natija state", "onStop");
     }
@@ -99,8 +101,6 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mAdapter.resumeCountDown();
-        Log.d("natija state", "onResume");
     }
 
 

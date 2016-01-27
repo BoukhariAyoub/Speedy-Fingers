@@ -10,7 +10,7 @@
 
     <com.ayoub.speedyfingers.AutoFitRecyclerView
         android:id="@+id/recycler"
-        android:columnWidth="100dp"
+        android:columnWidth="150dp"
         android:clipToPadding="false"
         android:background="@color/accent"
         android:layout_alignParentTop="true"

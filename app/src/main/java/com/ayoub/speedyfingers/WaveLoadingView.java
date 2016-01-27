@@ -16,7 +16,6 @@ import android.graphics.Shader;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
@@ -631,7 +630,7 @@ public class WaveLoadingView extends View {
     WeakHandler mHandler = new WeakHandler();//Looper.getMainLooper()
 
 
-    public void startCountDown(final Activity activity, final long time, final int position, final WordsAdapter adapter) {
+    public void startCountDown(final Activity activity, final long time, final int position, final WordsAdapter adapter, final boolean isStopped) {
         mCountDownTimer = new PreciseCountdown(time, time / 10) {
             int count = 0;
 
@@ -640,29 +639,35 @@ public class WaveLoadingView extends View {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        count += 10;
-                        setProgressValue(100 - count);
-                        Log.d("natija", "pos = " + position + "; millisUntilFinished = " + timeLeft + "; progress = " + getProgressValue());
+                        if (!isStopped) {
+                            count += 10;
+                            setProgressValue(100 - count);
+                        } else {
+                            setProgressValue(0);
+                            setWaveColor(ContextCompat.getColor(activity, R.color.md_green_500));
+                        }
+                        //   Log.d("natija", "pos = " + position + "; millisUntilFinished = " + timeLeft + "; progress = " + getProgressValue());
                     }
                 });
             }
 
             @Override
             public void onFinished() {
-                Log.d("natija done", "count = " + count + ";pos = " + position + "; progress = " + getProgressValue());
+                //     Log.d("natija done", "count = " + count + ";pos = " + position + "; progress = " + getProgressValue());
 
-                if (adapter.isPause) {
+                if (adapter.isPause || isStopped) {
                     this.cancel();
                     return;
                 }
+
 
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         SmallBang.attach2Window(activity).bang(WaveLoadingView.this);
                         //  SwissArmyKnife.playSound(getContext(), R.raw.mario);
-                        adapter.replaceItem(position);
-
+                        //adapter.next(position);
+                        adapter.gameOver();
                     }
                 });
             }
