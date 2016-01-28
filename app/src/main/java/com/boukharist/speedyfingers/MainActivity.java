@@ -1,102 +1,71 @@
 package com.boukharist.speedyfingers;
 
-import android.os.CountDownTimer;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import java.util.Arrays;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        View.OnClickListener {
 
 
-    int mIndex, mScore, mKeyStroke;
-    EditText mEditText;
-    TextView mScoreText, mTimerTextView;
-    WheelView mWheelView;
+    // Request code used to invoke sign in user interactions.
+    private static final int RC_SIGN_IN = 9001;
+
+    // Client used to interact with Google APIs.
+    private GoogleApiClient mGoogleApiClient;
+
+    private boolean mAutoStartSignInflow = true;
+
+    // Are we currently resolving a connection failure?
+    private boolean mResolvingConnectionFailure = false;
+
+    // Has the user clicked the sign-in button?
+    private boolean mSignInClicked = false;
+
+    // Set to true to automatically start the sign in flow when the Activity starts.
+    // Set to false to require the user to click the button in order to sign in.
+    private boolean mAutoStartSignInFlow = true;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Create the Google Api Client with access to Plus and Games
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                .build();
+
         setContentView(R.layout.activity_main);
 
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        findViewById(R.id.sign_out_button).setOnClickListener(this);
 
-        mScoreText = (TextView) findViewById(R.id.tv_score);
-        mTimerTextView = (TextView) findViewById(R.id.tv_timer);
-        mWheelView = (WheelView) findViewById(R.id.main_wv);
+        mGoogleApiClient.connect();
 
-        new CountDownTimer(30000, 1000) {
+    }
 
-            public void onTick(long millisUntilFinished) {
-                mTimerTextView.setText(String.format("%d", millisUntilFinished / 1000));
-            }
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
-            public void onFinish() {
-                mTimerTextView.setText("done!");
-            }
-        }.start();
-
-
-        String from = "Breakfast procuring nay end happiness allowance assurance frankness. Met simplicity nor difficulty unreserved who. Entreaties mr conviction dissimilar me astonished estimating cultivated. On no applauded exquisite my additions. Pronounce add boy estimable nay suspected. You sudden nay elinor thirty esteem temper. Quiet leave shy you gay off asked large style.";
-        final String[] splitted = from.split(" ");
-
-
-        mWheelView.setOffset(1);
-        mWheelView.setItems(Arrays.asList(splitted));
-        mWheelView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
-
-        mWheelView.setSelection(mIndex);
-
-        mWheelView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                Log.d("natija", "selectedIndex: " + selectedIndex + ", item: " + item);
-            }
-        });
-
-
-        mEditText = (EditText) findViewById(R.id.edit);
-
-        mEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence text, int start, int before, int count) {
-                if (!text.toString().isEmpty()) {
-                    mKeyStroke++;
-                }
-                Log.d("natija", "key stroke " + mKeyStroke);
-                if (splitted[mIndex].equalsIgnoreCase(text.toString())) {
-                    mIndex++;
-                    mScore++;
-                    mEditText.setText("");
-                    mWheelView.setSelection(mIndex);
-                    mScoreText.setText(String.format("Score : %d", mScore));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -119,5 +88,68 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    String TAG = "natija";
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "onConnected() called. Sign in successful!");
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "onConnectionSuspended() called. Trying to reconnect.");
+        mGoogleApiClient.connect();
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed() called, result: " + connectionResult);
+
+    /*      if (mResolvingConnectionFailure) {
+            return;
+        }
+      if (mSignInClicked || mAutoStartSignInFlow) {
+            mAutoStartSignInFlow = false;
+            mSignInClicked = false;
+            mResolvingConnectionFailure = true;
+
+            // Attempt to resolve the connection failure using BaseGameUtils.
+            // The R.string.signin_other_error value should reference a generic
+            // error string in your strings.xml file, such as "There was
+            // an issue with sign in, please try again later."
+            if (!BaseGameUtils.resolveConnectionFailure(this,
+                    mGoogleApiClient, connectionResult,
+                    RC_SIGN_IN, getString(R.string.signin_other_error))) {
+                mResolvingConnectionFailure = false;
+            }
+
+
+            //mConnectionResult = connectionResult;
+
+        }*/
+    }
+
+    protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
+        if (requestCode == RC_SIGN_IN) {
+            Log.d(TAG, "onActivityResult with requestCode == RC_SIGN_IN, responseCode="
+                    + responseCode + ", intent=" + intent);
+            mSignInClicked = false;
+            mResolvingConnectionFailure = false;
+            if (responseCode == RESULT_OK) {
+                mGoogleApiClient.connect();
+            } else {
+                Log.d("TAG", "sign in error other");
+                //   BaseGameUtils.showActivityResultError(this,requestCode,responseCode, R.string.signin_other_error);
+            }
+        }
     }
 }

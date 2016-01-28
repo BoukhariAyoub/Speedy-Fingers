@@ -131,7 +131,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     public boolean isWordHit(String typed) {
         for (int i = 0; i < subList.size(); i++) {
             if (typed.equalsIgnoreCase(subList.get(i).getText())) {
-              //  SwissArmyKnife.playSound(activity,R.raw.);
+                SwissArmyKnife.playSound(activity,R.raw.mario);
                 next(i);
                 return true;
             }

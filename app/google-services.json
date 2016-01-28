@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_id": "speedy-fingers-66292525",
+    "project_number": "871477355305",
+    "name": "Speedy Fingers"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871477355305:android:4d0e5afe01548aeb",
+        "client_id": "android:com.boukharist.speedyfingers",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.boukharist.speedyfingers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871477355305-gd044rekupq5mmpcnbtubv86kc7j5646.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.boukharist.speedyfingers",
+            "certificate_hash": "6D24C21FA16C23EF6470B1F12037FAD3ABB7799B"
+          }
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
