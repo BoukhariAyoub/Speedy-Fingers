@@ -7,21 +7,19 @@
         android:id="@+id/ribbon_layout"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:background="@drawable/ribbon"
-        android:layout_centerInParent="true">
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/White"
-        android:text="LEVEL 1"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:clickable="true">
 
-    </TextView>
+        <Button
+            android:id="@+id/button_level"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/ribbon_svg"
+            android:text="LEVEL 1"
+            android:textColor="@color/White"
+            android:elevation="10dp">
 
+        </Button>
 
 
     </RelativeLayout>

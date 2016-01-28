@@ -2,18 +2,24 @@ package com.ayoub.speedyfingers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import xyz.hanks.library.SmallBang;
+import xyz.hanks.library.SmallBangListener;
 
 public class Main2Activity extends AppCompatActivity implements View.OnClickListener {
 
@@ -30,6 +36,13 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
     @Bind(R.id.levelViewPager)
     ViewPager mPager;
 
+    @Bind(R.id.setting_info)
+    Button mSettingInfo;
+    @Bind(R.id.setting_leader_board)
+    Button mSettingLeaderBoard;
+    @Bind(R.id.setting_statistics)
+    Button mSettingStatistics;
+
     /**
      * The pager adapter, which provides the pages to the view pager widget.
      */
@@ -43,6 +56,9 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+
+        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf",mSettingInfo,mSettingLeaderBoard,mSettingStatistics);
+
         mPagerAdapter = new LevelSlidePagerAdapter(this);
         mPager.setAdapter(mPagerAdapter);
 
@@ -55,33 +71,6 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
     }
-
-    public enum CustomPagerEnum {
-
-        LEVEL1(R.string.level1, R.layout.level),
-        LEVEL2(R.string.level2, R.layout.level),
-        LEVEL3(R.string.level3, R.layout.level),
-        LEVEL4(R.string.level4, R.layout.level),
-        LEVEL5(R.string.level5, R.layout.level);
-
-        private int mTitleResId;
-        private int mLayoutResId;
-
-        CustomPagerEnum(int titleResId, int layoutResId) {
-            mTitleResId = titleResId;
-            mLayoutResId = layoutResId;
-        }
-
-        public int getTitleResId() {
-            return mTitleResId;
-        }
-
-        public int getLayoutResId() {
-            return mLayoutResId;
-        }
-
-    }
-
 
     /**
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
@@ -105,25 +94,41 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
             View page = getLayoutInflater().inflate(R.layout.level, container, false);
-            TextView textview = (TextView) page.findViewById(R.id.title);
+
+
+            Button button = (Button) page.findViewById(R.id.button_level);
             RelativeLayout ribbonLayout = (RelativeLayout) page.findViewById(R.id.ribbon_layout);
-            textview.setText(CustomPagerEnum.values()[position].mTitleResId);
+
+
+            int titleResId = LevelPagerEnum.values()[position].getTitleResId();
+            int colorResId = LevelPagerEnum.values()[position].getColorResId();
+
+            VectorDrawable vectorDrawable = (VectorDrawable) button.getBackground();
+            PorterDuffColorFilter porterDuffColorFilter = new PorterDuffColorFilter(ContextCompat.getColor(mContext, colorResId),
+                    PorterDuff.Mode.SRC_ATOP);
+            vectorDrawable.setColorFilter(porterDuffColorFilter);
+
+            button.setText(titleResId);
             container.addView(page);
+
+
             View.OnClickListener clickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    click(position);
+                    click(view, position);
                 }
             };
 
-            textview.setOnClickListener(clickListener);
+            button.setOnClickListener(clickListener);
 
 
             return (page);
         }
 
-        private void click(int position) {
-            Intent intent = new Intent(Main2Activity.this, GameActivity.class);
+        private void click(View view, int position) {
+
+
+            final Intent intent = new Intent(Main2Activity.this, GameActivity.class);
             String difficulty = null;
             long time = 0;
             int[] pattern = new int[10];
@@ -163,15 +168,17 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
 
 
-         /*   intent.putExtra("difficulty", "medium");
-            intent.putExtra("time", Constants.COUNTDOWN_TIME_MEDIUM);
+            SmallBang.attach2Window(Main2Activity.this).bang(view, new SmallBangListener() {
+                @Override
+                public void onAnimationStart() {
 
+                }
 
-            intent.putExtra("difficulty", "hard");
-            intent.putExtra("time", Constants.COUNTDOWN_TIME_HARD); */
-
-
-            startActivity(intent);
+                @Override
+                public void onAnimationEnd() {
+                    startActivity(intent);
+                }
+            });
 
         }
 

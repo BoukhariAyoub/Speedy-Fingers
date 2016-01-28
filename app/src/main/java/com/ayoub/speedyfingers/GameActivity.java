@@ -8,31 +8,45 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.FadeInAnimator;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     int mScore, mKeyStroke;
     WordsAdapter mAdapter;
+    @Bind(R.id.toolbar_back)
+    TextView mBackTextView;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
+        ButterKnife.bind(this);
+
+
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(null);
+        toolbar.setSubtitle(null);
         // AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         RecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemAnimator(new FadeInAnimator());
+
+        mBackTextView.setOnClickListener(this);
 
 
         String from = SwissArmyKnife.getStringFromFile(this, "eng.txt", ";");
@@ -104,4 +118,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == mBackTextView.getId()){
+            this.finish();
+        }
+    }
 }
