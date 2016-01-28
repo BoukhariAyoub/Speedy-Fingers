@@ -477,6 +477,13 @@ public class WaveLoadingView extends View {
 
     public void setCenterTitle(String centerTitle) {
         mCenterTitle = centerTitle;
+        int textWidth =(int) mCenterTitlePaint.measureText(centerTitle);
+        refitText(centerTitle, measureWidth(textWidth));
+
+        //force re-calculating the layout dimension and the redraw of the view
+        requestLayout();
+        invalidate();
+
     }
 
     public String getCenterTitle() {
@@ -644,6 +651,7 @@ public class WaveLoadingView extends View {
                             count += 10;
                             setProgressValue(100 - count);
                         } else {
+                            adapter.activity.addScore(getProgressValue());
                             setProgressValue(0);
                             setWaveColor(ContextCompat.getColor(activity, R.color.md_green_500));
                         }

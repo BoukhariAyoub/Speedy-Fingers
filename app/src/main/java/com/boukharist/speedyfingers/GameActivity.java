@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,10 +22,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     int mScore, mKeyStroke;
     WordsAdapter mAdapter;
-    @Bind(R.id.toolbar_back)
+    @Bind(R.id.back)
     TextView mBackTextView;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
+    @Bind(R.id.score)
+    TextView mScoreTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +35,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
 
 
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(null);
-        toolbar.setSubtitle(null);
         // AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         RecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
@@ -52,15 +48,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         String from = SwissArmyKnife.getStringFromFile(this, "eng.txt", ";");
         assert from != null;
 
-        String[] words =  getResources().getStringArray(R.array.words);
-      //  String[] splitted = from.split(";");
+        String[] words = getResources().getStringArray(R.array.words);
+        //  String[] splitted = from.split(";");
 
         final ArrayList<String> wordsList = new ArrayList<>(Arrays.asList(words));
         SwissArmyKnife.randomizeList(wordsList);
 
 
         long time = getIntent().getLongExtra("time", 0);
-        mAdapter = new WordsAdapter(wordsList, this, time,layoutManager,recyclerView);
+        mAdapter = new WordsAdapter(wordsList, this, time, layoutManager, recyclerView);
         recyclerView.setAdapter(mAdapter);
 
 
@@ -81,9 +77,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 if (!text.toString().isEmpty()) {
                     mKeyStroke++;
                 }
-             //   Log.d("natija", "key stroke " + mKeyStroke);
-                if (mAdapter.isWordHit(text.toString())) {
-                    mScore++;
+                //   Log.d("natija", "key stroke " + mKeyStroke);
+                if (mAdapter.isWordHit(text.toString(), mScore, mScoreTextView)) {
+                    //  mScore++;
                     mEditText.setText("");
 
                 }
@@ -123,8 +119,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == mBackTextView.getId()){
+        if (v.getId() == mBackTextView.getId()) {
             this.finish();
         }
+    }
+
+    public void addScore(int score) {
+
+        mScore += score;
+        mScoreTextView.setText("Score : " + mScore);
+
     }
 }

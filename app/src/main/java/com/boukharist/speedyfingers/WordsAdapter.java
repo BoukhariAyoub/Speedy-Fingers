@@ -1,6 +1,5 @@
 package com.boukharist.speedyfingers;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
     ArrayList<String> wordList;
     ArrayList<Item> subList;
-    Activity activity;
+    GameActivity activity;
     WordsViewHolder mHolder;
     GridLayoutManager mLayoutManager;
     long time;
@@ -35,7 +35,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     }
 
 
-    public WordsAdapter(ArrayList<String> wordList, Activity activity, long time, GridLayoutManager layoutManager, RecyclerView recyclerView) {
+    public WordsAdapter(ArrayList<String> wordList, GameActivity activity, long time, GridLayoutManager layoutManager, RecyclerView recyclerView) {
         this.wordList = wordList;
         this.activity = activity;
         this.time = time;
@@ -108,31 +108,44 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
     public void next(int position) {
         if (!isPause) {
-            solvedByStep[currentStep]++;
-            if (solvedByStep[currentStep] < pattern[currentStep]) {
-                stopItem(position);
-            } else {
-                currentStep++;
-                if (pattern[currentStep - 1] == pattern[currentStep]) {
-                    for (int i = 0; i < pattern[currentStep]; i++) {
-                        replaceItem(i);
-                    }
+            if (currentStep < pattern.length) { //CHECK IF NOT LAST STEP
+                solvedByStep[currentStep]++;
+                if (solvedByStep[currentStep] < pattern[currentStep]) {
+                    stopItem(position);
                 } else {
-                    for (int i = 0; i < pattern[currentStep] - 1; i++) {
-                        replaceItem(i);
+                    //    stopItem(position);
+                    currentStep++;
+                    if (currentStep < pattern.length) {
+                        if (pattern[currentStep - 1] == pattern[currentStep]) {
+                            for (int i = 0; i < pattern[currentStep]; i++) {
+                                replaceItem(i);
+                            }
+                        } else {
+                            for (int i = 0; i < pattern[currentStep] - 1; i++) {
+                                replaceItem(i);
+                            }
+                            addItem();
+                        }
                     }
-                    addItem();
+                    else {
+                        activity.finish();
+                        //WON THE CURRENT LEVEL
+                    }
                 }
+            } else {
+                activity.finish();
+                //WON THE CURRENT LEVEL
             }
         }
     }
 
 
-    public boolean isWordHit(String typed) {
+    public boolean isWordHit(String typed, int score, TextView scoreTextView) {
         for (int i = 0; i < subList.size(); i++) {
             if (typed.equalsIgnoreCase(subList.get(i).getText())) {
-                SwissArmyKnife.playSound(activity,R.raw.mario);
+                SwissArmyKnife.playSound(activity, R.raw.mario);
                 next(i);
+
                 return true;
             }
         }
@@ -145,17 +158,21 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     }
 
     private void reSizeLayoutManager() {
+
         if ((currentStep - 1 < pattern.length && solvedByStep[currentStep] == pattern[currentStep] - 1) || (currentStep == 0 && solvedByStep[currentStep] == 0)) {
-            switch (pattern[currentStep + 1]) {
-                case 1:
-                    mLayoutManager.setSpanCount(1);
-                    break;
-                case 2:
-                    mLayoutManager.setSpanCount(2);
-                    break;
-                default:
-                    mLayoutManager.setSpanCount(3);
-                    break;
+            if (currentStep < pattern.length - 1) {
+
+                switch (pattern[currentStep + 1]) {
+                    case 1:
+                        mLayoutManager.setSpanCount(1);
+                        break;
+                    case 2:
+                        mLayoutManager.setSpanCount(2);
+                        break;
+                    default:
+                        mLayoutManager.setSpanCount(3);
+                        break;
+                }
             }
         }
 

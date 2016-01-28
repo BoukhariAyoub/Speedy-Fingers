@@ -23,7 +23,6 @@
 
 
 
-
         <activity
             android:name=".Main2Activity"
             android:theme="@style/AppTheme.NoActionBar">
