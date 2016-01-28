@@ -1,4 +1,4 @@
-package com.ayoub.speedyfingers;
+package com.boukharist.speedyfingers;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

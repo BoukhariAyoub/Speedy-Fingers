@@ -1,4 +1,4 @@
-package com.ayoub.speedyfingers;
+package com.boukharist.speedyfingers;
 
 /**
  * Created by Administrateur on 1/26/2016.

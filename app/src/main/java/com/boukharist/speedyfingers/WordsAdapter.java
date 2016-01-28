@@ -1,4 +1,4 @@
-package com.ayoub.speedyfingers;
+package com.boukharist.speedyfingers;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.badoo.mobile.util.WeakHandler;
 
 import java.util.ArrayList;
 
@@ -109,35 +107,31 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     }
 
     public void next(int position) {
-
-        solvedByStep[currentStep]++;
-        if (solvedByStep[currentStep] < pattern[currentStep]) {
-            stopItem(position);
-        } else {
-            currentStep++;
-            if (pattern[currentStep - 1] == pattern[currentStep]) {
-                for (int i = 0; i < pattern[currentStep]; i++) {
-                    replaceItem(i);
-                }
+        if (!isPause) {
+            solvedByStep[currentStep]++;
+            if (solvedByStep[currentStep] < pattern[currentStep]) {
+                stopItem(position);
             } else {
-                for (int i = 0; i < pattern[currentStep] - 1; i++) {
-                    replaceItem(i);
+                currentStep++;
+                if (pattern[currentStep - 1] == pattern[currentStep]) {
+                    for (int i = 0; i < pattern[currentStep]; i++) {
+                        replaceItem(i);
+                    }
+                } else {
+                    for (int i = 0; i < pattern[currentStep] - 1; i++) {
+                        replaceItem(i);
+                    }
+                    addItem();
                 }
-                addItem();
             }
         }
-
-      /*  if (pattern[currentStep] != pattern[currentStep + 1]) {
-            update();
-            recyclerView.setLayoutManager(mLayoutManager);
-        }
-*/
     }
 
 
     public boolean isWordHit(String typed) {
         for (int i = 0; i < subList.size(); i++) {
             if (typed.equalsIgnoreCase(subList.get(i).getText())) {
+              //  SwissArmyKnife.playSound(activity,R.raw.);
                 next(i);
                 return true;
             }
@@ -146,18 +140,12 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     }
 
     public void gameOver() {
-        //     SmallBang.attach2Window(activity).bang(recyclerView);
         final Intent intent = new Intent(activity, Main2Activity.class);
-        new WeakHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                activity.startActivity(intent);
-            }
-        }, 1000);
+        activity.startActivity(intent);
     }
 
     private void reSizeLayoutManager() {
-        if (currentStep - 1 < pattern.length && solvedByStep[currentStep] == pattern[currentStep] - 1) {
+        if ((currentStep - 1 < pattern.length && solvedByStep[currentStep] == pattern[currentStep] - 1) || (currentStep == 0 && solvedByStep[currentStep] == 0)) {
             switch (pattern[currentStep + 1]) {
                 case 1:
                     mLayoutManager.setSpanCount(1);

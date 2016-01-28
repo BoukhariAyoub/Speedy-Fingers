@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ayoub.speedyfingers.GameActivity"
+    tools:context="com.boukharist.speedyfingers.GameActivity"
     tools:showIn="@layout/activity_game">
 
-    <com.ayoub.speedyfingers.AutoFitRecyclerView
+    <com.boukharist.speedyfingers.AutoFitRecyclerView
         android:id="@+id/recycler"
         android:columnWidth="150dp"
         android:clipToPadding="false"
@@ -19,7 +19,7 @@
         android:layout_above="@+id/edit"
         />
 
-    <com.ayoub.speedyfingers.DismissHandleEditText
+    <com.boukharist.speedyfingers.DismissHandleEditText
         android:id="@+id/edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

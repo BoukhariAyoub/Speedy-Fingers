@@ -25,6 +25,6 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'hanks.xyz:smallbang-library:0.1.2'
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.badoo.mobile:android-weak-handler:1.1'
+   compile 'com.badoo.mobile:android-weak-handler:1.1'
     compile 'jp.wasabeef:recyclerview-animators:2.1.0'
 }

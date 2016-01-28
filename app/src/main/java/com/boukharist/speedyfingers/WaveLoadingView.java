@@ -1,4 +1,4 @@
-package com.ayoub.speedyfingers;
+package com.boukharist.speedyfingers;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -23,6 +23,7 @@ import android.view.animation.LinearInterpolator;
 import com.badoo.mobile.util.WeakHandler;
 
 import xyz.hanks.library.SmallBang;
+import xyz.hanks.library.SmallBangListener;
 
 public class WaveLoadingView extends View {
     /**
@@ -664,10 +665,17 @@ public class WaveLoadingView extends View {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        SmallBang.attach2Window(activity).bang(WaveLoadingView.this);
-                        //  SwissArmyKnife.playSound(getContext(), R.raw.mario);
-                        //adapter.next(position);
-                        adapter.gameOver();
+                        SmallBang.attach2Window(activity).bang(WaveLoadingView.this, new SmallBangListener() {
+                            @Override
+                            public void onAnimationStart() {
+                                adapter.cancel();
+                            }
+
+                            @Override
+                            public void onAnimationEnd() {
+                                adapter.gameOver();
+                            }
+                        });
                     }
                 });
             }

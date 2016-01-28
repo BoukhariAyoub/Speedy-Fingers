@@ -1,4 +1,4 @@
-package com.ayoub.speedyfingers;
+package com.boukharist.speedyfingers;
 
 import android.content.Context;
 import android.content.res.TypedArray;

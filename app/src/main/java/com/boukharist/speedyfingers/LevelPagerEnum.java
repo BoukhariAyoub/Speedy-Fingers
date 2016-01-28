@@ -1,4 +1,4 @@
-package com.ayoub.speedyfingers;
+package com.boukharist.speedyfingers;
 
 /**
  * Created by ayoub.boukhari on 28/01/2016.

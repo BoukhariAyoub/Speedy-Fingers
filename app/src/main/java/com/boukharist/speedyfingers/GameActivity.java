@@ -1,4 +1,4 @@
-package com.ayoub.speedyfingers;
+package com.boukharist.speedyfingers;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -51,10 +51,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         String from = SwissArmyKnife.getStringFromFile(this, "eng.txt", ";");
         assert from != null;
-        String[] splitted = from.split(";");
 
-        final ArrayList<String> wordsList = new ArrayList<>(Arrays.asList(splitted));
-        //  SwissArmyKnife.randomizeList(wordsList);
+        String[] words =  getResources().getStringArray(R.array.words);
+      //  String[] splitted = from.split(";");
+
+        final ArrayList<String> wordsList = new ArrayList<>(Arrays.asList(words));
+        SwissArmyKnife.randomizeList(wordsList);
 
 
         long time = getIntent().getLongExtra("time", 0);
@@ -98,6 +100,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         mAdapter.cancel();
+        finish();
         //  finish();
         //  startActivity(new Intent(this,MainActivity.class));
         Log.d("natija state", "onPause");

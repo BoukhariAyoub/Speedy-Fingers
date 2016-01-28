@@ -40,7 +40,7 @@
     </RelativeLayout>
 
 
-    <com.ayoub.speedyfingers.WheelView
+    <com.boukharist.speedyfingers.WheelView
         android:id="@+id/main_wv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

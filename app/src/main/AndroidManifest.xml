@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ayoub.speedyfingers">
+    package="com.boukharist.speedyfingers">
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity"/>
         <activity
             android:name=".Main2Activity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -22,11 +21,9 @@
         </activity>
         <activity
             android:name=".GameActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
-
-
         </activity>
     </application>
 
