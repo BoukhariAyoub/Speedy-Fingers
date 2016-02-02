@@ -12,12 +12,13 @@
 
     <ImageView
         android:id="@+id/iv_logo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:background="@drawable/hand_logo" />
+        android:background="@drawable/logo" />
 
     <TextView
         android:id="@+id/title"
@@ -26,7 +27,7 @@
         android:layout_below="@+id/iv_logo"
         android:layout_centerHorizontal="true"
         android:text="SPEEDY FINGERS"
-        android:textColor="@color/md_grey_50"
+        android:textColor="@color/md_white_1000"
         android:textSize="30sp"
         android:textStyle="bold"
 
@@ -58,14 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/divider"
         android:layout_centerInParent="true" />
-    <Button
-        android:id="@+id/achievement"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/sign_in_button"
-        android:layout_alignBottom="@+id/sign_in_button"
-        android:text="acheivement"
-        />
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -79,17 +73,17 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="5dp"
-            android:background="@drawable/rounded_square"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="@string/fa_trophy"
             android:textColor="@color/md_white_1000"
             android:textSize="30sp" />
 
         <Button
-            android:id="@+id/setting_statistics"
+            android:id="@+id/setting_achievement"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="5dp"
-            android:background="@drawable/rounded_square"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="@string/fa_bar_chart_o"
             android:textColor="@color/md_white_1000"
             android:textSize="30sp" />
@@ -99,7 +93,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="5dp"
-            android:background="@drawable/rounded_square"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:text="@string/fa_info"
             android:textColor="@color/md_white_1000"
             android:textSize="30sp" />

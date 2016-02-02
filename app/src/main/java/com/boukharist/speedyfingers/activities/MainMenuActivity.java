@@ -56,16 +56,19 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
      */
     @Bind(R.id.levelViewPager)
     ViewPager mPager;
+
+
     @Bind(R.id.setting_info)
-    Button mSettingInfo;
+    Button mInfoButton;
     @Bind(R.id.setting_leader_board)
-    Button mSettingLeaderBoard;
-    @Bind(R.id.setting_statistics)
-    Button mSettingStatistics;
+    Button mLeaderBoardButton;
+    @Bind(R.id.setting_achievement)
+    Button mAchievementButton;
+
+
     @Bind(R.id.sign_in_button)
     SignInButton mGoogleSignInButton;
-    @Bind(R.id.achievement)
-    Button mAchievementButton;
+
 
 
     /**
@@ -100,7 +103,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
 
         mAchievementButton.setOnClickListener(this);
 
-        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf", mSettingInfo, mSettingLeaderBoard, mSettingStatistics);
+        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf", mInfoButton, mLeaderBoardButton,mAchievementButton);
 
         mPagerAdapter = new LevelSlidePagerAdapter(this);
         mPager.setAdapter(mPagerAdapter);
