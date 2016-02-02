@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme">
 
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
 
 
         </activity>
@@ -24,7 +24,7 @@
 
 
         <activity
-            android:name=".Main2Activity"
+            android:name=".activities.MainMenuActivity"
             android:theme="@style/AppTheme.NoActionBar">
 
             <intent-filter>
@@ -37,7 +37,7 @@
 
 
         <activity
-            android:name=".GameActivity"
+            android:name=".activities.GameActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />

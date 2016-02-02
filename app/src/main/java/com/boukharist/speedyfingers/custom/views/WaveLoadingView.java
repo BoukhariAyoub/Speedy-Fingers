@@ -1,9 +1,8 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.custom.views;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -21,6 +20,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.badoo.mobile.util.WeakHandler;
+import com.boukharist.speedyfingers.R;
+import com.boukharist.speedyfingers.activities.GameActivity;
+import com.boukharist.speedyfingers.adapter.WordsAdapter;
+import com.boukharist.speedyfingers.utils.PreciseCountdown;
 
 import xyz.hanks.library.SmallBang;
 import xyz.hanks.library.SmallBangListener;
@@ -477,7 +480,7 @@ public class WaveLoadingView extends View {
 
     public void setCenterTitle(String centerTitle) {
         mCenterTitle = centerTitle;
-        int textWidth =(int) mCenterTitlePaint.measureText(centerTitle);
+        int textWidth = (int) mCenterTitlePaint.measureText(centerTitle);
         refitText(centerTitle, measureWidth(textWidth));
 
         //force re-calculating the layout dimension and the redraw of the view
@@ -634,11 +637,12 @@ public class WaveLoadingView extends View {
     }
 
     // CountDownTimer mCountDownTimer;
-    PreciseCountdown mCountDownTimer;
+    public PreciseCountdown mCountDownTimer;
     WeakHandler mHandler = new WeakHandler();//Looper.getMainLooper()
 
 
-    public void startCountDown(final Activity activity, final long time, final int position, final WordsAdapter adapter, final boolean isStopped) {
+    public void startCountDown(final GameActivity activity, final long time, final int position, final WordsAdapter adapter, final boolean isStopped) {
+
         mCountDownTimer = new PreciseCountdown(time, time / 10) {
             int count = 0;
 
@@ -651,9 +655,7 @@ public class WaveLoadingView extends View {
                             count += 10;
                             setProgressValue(100 - count);
                         } else {
-                            adapter.activity.addScore(getProgressValue());
-                            setProgressValue(0);
-                            setWaveColor(ContextCompat.getColor(activity, R.color.md_green_500));
+                            wordHit(adapter, activity);
                         }
                         //   Log.d("natija", "pos = " + position + "; millisUntilFinished = " + timeLeft + "; progress = " + getProgressValue());
                     }
@@ -688,6 +690,7 @@ public class WaveLoadingView extends View {
                 });
             }
         };
+
         mCountDownTimer.start();
 
     }
@@ -702,6 +705,13 @@ public class WaveLoadingView extends View {
         if (mAnimatorSet != null) {
             mAnimatorSet.end();
         }
+    }
+
+    public void wordHit(WordsAdapter adapter, GameActivity activity) {
+        adapter.mGameActivity.addScore(getProgressValue());
+        setProgressValue(0);
+        setWaveColor(ContextCompat.getColor(activity, R.color.md_green_500));
+        cancel();
     }
 
 }

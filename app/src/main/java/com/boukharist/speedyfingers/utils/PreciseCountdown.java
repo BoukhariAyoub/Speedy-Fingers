@@ -1,4 +1,4 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.utils;
 
 import java.util.Timer;
 import java.util.TimerTask;

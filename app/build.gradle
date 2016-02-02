@@ -29,6 +29,7 @@ dependencies {
     compile 'jp.wasabeef:recyclerview-animators:2.1.0'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    compile 'com.nineoldandroids:library:2.4.0'
 
 }
 

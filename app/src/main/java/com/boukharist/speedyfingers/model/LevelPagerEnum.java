@@ -1,10 +1,11 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.model;
+
+import com.boukharist.speedyfingers.R;
 
 /**
  * Created by ayoub.boukhari on 28/01/2016.
  */
 public enum LevelPagerEnum {
-
 
     LEVEL1(R.string.level1, R.color.md_amber_100),
     LEVEL2(R.string.level2, R.color.md_amber_200),

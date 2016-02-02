@@ -1,4 +1,4 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -6,9 +6,15 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import com.boukharist.speedyfingers.R;
+import com.boukharist.speedyfingers.adapter.WordsAdapter;
+import com.boukharist.speedyfingers.custom.views.AutoFitRecyclerView;
+import com.boukharist.speedyfingers.custom.views.CountingTextView;
+import com.boukharist.speedyfingers.custom.views.DismissHandleEditText;
+import com.boukharist.speedyfingers.utils.SwissArmyKnife;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +31,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     @Bind(R.id.back)
     TextView mBackTextView;
     @Bind(R.id.score)
-    TextView mScoreTextView;
+    CountingTextView mScoreTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setItemAnimator(new FadeInAnimator());
 
         mBackTextView.setOnClickListener(this);
+
+      //  getWindow().setBackgroundDrawable(new ColorDrawable((backgroundFromColor = getIntent().getIntExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, 0xff8B7D6B))));
+      //  WaveCompat.transitionDefaultInitial(this, ABTextUtil.dip2px(context, 80), backgroundFromColor, Color.GRAY);
 
 
         String from = SwissArmyKnife.getStringFromFile(this, "eng.txt", ";");
@@ -78,7 +87,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     mKeyStroke++;
                 }
                 //   Log.d("natija", "key stroke " + mKeyStroke);
-                if (mAdapter.isWordHit(text.toString(), mScore, mScoreTextView)) {
+                if (mAdapter.isWordHit(text.toString())) {
                     //  mScore++;
                     mEditText.setText("");
 
@@ -99,7 +108,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         finish();
         //  finish();
         //  startActivity(new Intent(this,MainActivity.class));
-        Log.d("natija state", "onPause");
     }
 
 
@@ -108,7 +116,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onStop();
         // mAdapter.cancel();
         //  finish();
-        Log.d("natija state", "onStop");
     }
 
     @Override
@@ -125,9 +132,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void addScore(int score) {
-
+        int previous = mScore;
         mScore += score;
-        mScoreTextView.setText("Score : " + mScore);
+        mScoreTextView.animateText(previous, mScore);
+    }
+
+    public void levelFinished(){
 
     }
 }

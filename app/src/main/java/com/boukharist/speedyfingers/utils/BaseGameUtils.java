@@ -1,4 +1,4 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.utils;
 
 
 import android.app.Activity;
@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.IntentSender;
 import android.util.Log;
 
+import com.boukharist.speedyfingers.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;

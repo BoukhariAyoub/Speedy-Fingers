@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.boukharist.speedyfingers.GameActivity"
+    tools:context=".activities.GameActivity"
     tools:showIn="@layout/activity_game">
 
     <RelativeLayout
@@ -21,18 +21,18 @@
             android:layout_centerVertical="true"
             android:text="BACK"/>
 
-        <TextView
+        <com.boukharist.speedyfingers.custom.views.CountingTextView
             android:id="@+id/score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/md_green_600"
             android:layout_centerInParent="true"
-            android:text="BACK"/>
+            android:text="0"/>
 
 
     </RelativeLayout>
 
-    <com.boukharist.speedyfingers.AutoFitRecyclerView
+    <com.boukharist.speedyfingers.custom.views.AutoFitRecyclerView
         android:layout_below="@+id/bar"
         android:id="@+id/recycler"
         android:columnWidth="150dp"
@@ -43,7 +43,7 @@
         android:layout_above="@+id/edit"
         />
 
-    <com.boukharist.speedyfingers.DismissHandleEditText
+    <com.boukharist.speedyfingers.custom.views.DismissHandleEditText
         android:id="@+id/edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

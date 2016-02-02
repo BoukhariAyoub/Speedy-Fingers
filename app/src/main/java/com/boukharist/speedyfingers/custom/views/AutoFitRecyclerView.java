@@ -1,4 +1,4 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.custom.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;

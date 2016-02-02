@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/md_teal_100"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.boukharist.speedyfingers.Main2Activity"
+    tools:context=".activities.MainMenuActivity"
     tools:showIn="@layout/activity_main2">
 
     <ImageView

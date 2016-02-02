@@ -1,4 +1,7 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.model;
+
+import com.boukharist.speedyfingers.custom.views.WaveLoadingView;
+import com.boukharist.speedyfingers.utils.PreciseCountdown;
 
 /**
  * Created by Administrateur on 1/22/2016.
@@ -9,6 +12,10 @@ public class Item {
     long time = 0;
     long delay = 0;
     boolean isStopped = false;
+    PreciseCountdown countdown;
+    WaveLoadingView waveLoadingView;
+
+
 
     public Item(String text, long time, long delay, boolean isStopped) {
         this.text = text;
@@ -20,6 +27,25 @@ public class Item {
     public Item(String text) {
         this.text = text;
     }
+
+    public PreciseCountdown getCountdown() {
+        return countdown;
+    }
+
+    public void setCountdown(PreciseCountdown countdown) {
+        this.countdown = countdown;
+    }
+
+    public void setWaveLoadingView(WaveLoadingView waveLoadingView) {
+        this.waveLoadingView = waveLoadingView;
+    }
+
+    public WaveLoadingView getWaveLoadingView() {
+        return waveLoadingView;
+    }
+
+
+
 
     public String getText() {
         return text;

@@ -1,4 +1,4 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.adapter;
 
 import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
@@ -7,7 +7,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.boukharist.speedyfingers.R;
+import com.boukharist.speedyfingers.activities.GameActivity;
+import com.boukharist.speedyfingers.activities.MainMenuActivity;
+import com.boukharist.speedyfingers.custom.views.WaveLoadingView;
+import com.boukharist.speedyfingers.model.Item;
+import com.boukharist.speedyfingers.utils.SwissArmyKnife;
 
 import java.util.ArrayList;
 
@@ -18,7 +24,6 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
     ArrayList<String> wordList;
     ArrayList<Item> subList;
-    GameActivity activity;
     WordsViewHolder mHolder;
     GridLayoutManager mLayoutManager;
     long time;
@@ -26,8 +31,10 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     public static int currentIndex; //current Index of main LIST
     public int currentStep = 0; // current step Index
     int[] solvedByStep = new int[10]; //number of answers by step
-    boolean isPause = false;
     RecyclerView recyclerView;
+    public GameActivity mGameActivity;
+    public boolean isPause = false;
+
 
     @Override
     public void onViewRecycled(WordsViewHolder holder) {
@@ -37,7 +44,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
     public WordsAdapter(ArrayList<String> wordList, GameActivity activity, long time, GridLayoutManager layoutManager, RecyclerView recyclerView) {
         this.wordList = wordList;
-        this.activity = activity;
+        this.mGameActivity = activity;
         this.time = time;
         this.mLayoutManager = layoutManager;
         this.recyclerView = recyclerView;
@@ -49,6 +56,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
             Item item = new Item(wordList.get(i));
             subList.add(item);
         }
+        mLayoutManager.setSpanCount(pattern[currentStep]);
     }
 
     @Override
@@ -61,13 +69,12 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     public void onBindViewHolder(WordsViewHolder holder, int position) {
         holder.waveLoadingView.setCenterTitle(subList.get(position).getText());
 
-        reSizeLayoutManager();
-
-
         if (holder.waveLoadingView.mCountDownTimer != null) {
             holder.waveLoadingView.mCountDownTimer.cancel();
         }
-        holder.waveLoadingView.startCountDown(activity, time, position, this, subList.get(position).isStopped);
+
+        holder.waveLoadingView.startCountDown(mGameActivity, time, position, this, subList.get(position).isStopped());
+        subList.get(position).setWaveLoadingView(holder.waveLoadingView);
     }
 
 
@@ -77,7 +84,6 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     }
 
     public void addItem() {
-        Log.d("natija", "add Item");
         if (currentIndex < wordList.size() - 1) {
             currentIndex++;
             subList.add(new Item(wordList.get(currentIndex)));
@@ -85,17 +91,22 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
         }
     }
 
-    public void replaceItem(final int pos) {
+    public void replaceItem(final int position) {
         if (currentIndex < wordList.size() - 1) {
             currentIndex++;
-            subList.set(pos, new Item(wordList.get(currentIndex)));
-            notifyItemChanged(pos);
+            subList.set(position, new Item(wordList.get(currentIndex)));
+            notifyItemChanged(position);
         }
     }
 
-    public void stopItem(int pos) {
-        subList.get(pos).setIsStopped(true);
-        notifyItemChanged(pos);
+    /**
+     * stop the count of the current word
+     *
+     * @param position
+     */
+    public void stopItem(int position) {
+        subList.get(position).setIsStopped(true);
+        notifyItemChanged(position);
     }
 
     private void update() {
@@ -106,46 +117,53 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
         // this.onBindViewHolder(mHolder,0);
     }
 
+    /**
+     * what to do next on word hit
+     *
+     * @param position the position of the hit word
+     */
     public void next(int position) {
-        if (!isPause) {
-            if (currentStep < pattern.length) { //CHECK IF NOT LAST STEP
-                solvedByStep[currentStep]++;
-                if (solvedByStep[currentStep] < pattern[currentStep]) {
-                    stopItem(position);
-                } else {
-                    //    stopItem(position);
-                    currentStep++;
-                    if (currentStep < pattern.length) {
-                        if (pattern[currentStep - 1] == pattern[currentStep]) {
-                            for (int i = 0; i < pattern[currentStep]; i++) {
+        if (!isPause) { //if not paused
+            if (currentStep < pattern.length) { //if current step exists
+                solvedByStep[currentStep]++; //increase number of solved words in this step
+                stopItem(position); //stop counting time for the solved word
+                if (solvedByStep[currentStep] >= pattern[currentStep]) {//if  last word to solve
+
+                    subList.get(position).getWaveLoadingView().wordHit(this, mGameActivity);
+
+                    reSizeLayoutManager();
+                    if (currentStep + 1 < pattern.length) {//if next step exists
+                        currentStep++;//move to next step
+                        if (pattern[currentStep - 1] == pattern[currentStep]) { //if number of words in current step == number of words in next step
+                            for (int i = 0; i < pattern[currentStep]; i++) { //replace each word
                                 replaceItem(i);
                             }
-                        } else {
-                            for (int i = 0; i < pattern[currentStep] - 1; i++) {
-                                replaceItem(i);
+                        } else { //if number of words in current step != number of words in next step
+                            for (int i = 0; i < pattern[currentStep - 1]; i++) {
+                                replaceItem(i);//replace the existing words
                             }
-                            addItem();
+                            for (int i = 0; i < pattern[currentStep] - pattern[currentStep - 1]; i++) {
+                                addItem();//and add new items by number diff
+                            }
                         }
-                    }
-                    else {
-                        activity.finish();
-                        //WON THE CURRENT LEVEL
+                    } else {//if next step does not exist ( LEVEL FINISHED )
+                        mGameActivity.finish();
                     }
                 }
-            } else {
-                activity.finish();
-                //WON THE CURRENT LEVEL
+
             }
+        } else {//if current step does not exist
+            mGameActivity.finish();
+            //WON THE CURRENT LEVEL
         }
     }
 
 
-    public boolean isWordHit(String typed, int score, TextView scoreTextView) {
+    public boolean isWordHit(String typed) {
         for (int i = 0; i < subList.size(); i++) {
             if (typed.equalsIgnoreCase(subList.get(i).getText())) {
-                SwissArmyKnife.playSound(activity, R.raw.mario);
+                SwissArmyKnife.playSound(mGameActivity, R.raw.mario);
                 next(i);
-
                 return true;
             }
         }
@@ -153,26 +171,25 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     }
 
     public void gameOver() {
-        final Intent intent = new Intent(activity, Main2Activity.class);
-        activity.startActivity(intent);
+        final Intent intent = new Intent(mGameActivity, MainMenuActivity.class);
+        mGameActivity.startActivity(intent);
     }
 
     private void reSizeLayoutManager() {
 
-        if ((currentStep - 1 < pattern.length && solvedByStep[currentStep] == pattern[currentStep] - 1) || (currentStep == 0 && solvedByStep[currentStep] == 0)) {
-            if (currentStep < pattern.length - 1) {
+        if (currentStep + 1 < pattern.length) { //if next step exists
 
-                switch (pattern[currentStep + 1]) {
-                    case 1:
-                        mLayoutManager.setSpanCount(1);
-                        break;
-                    case 2:
-                        mLayoutManager.setSpanCount(2);
-                        break;
-                    default:
-                        mLayoutManager.setSpanCount(3);
-                        break;
-                }
+            switch (pattern[currentStep + 1]) {
+                case 1:
+                    mLayoutManager.setSpanCount(1);
+                    break;
+                case 2:
+                    mLayoutManager.setSpanCount(2);
+                    break;
+                default:
+                    mLayoutManager.setSpanCount(3);
+                    break;
+
             }
         }
 
@@ -192,7 +209,6 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
         public WordsViewHolder(View itemView) {
             super(itemView);
             waveLoadingView = (WaveLoadingView) itemView.findViewById(R.id.waveLoadingView);
-
         }
     }
 

@@ -1,7 +1,8 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.VectorDrawable;
@@ -16,12 +17,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.boukharist.speedyfingers.R;
+import com.boukharist.speedyfingers.custom.animation.WaveCompat;
+import com.boukharist.speedyfingers.custom.animation.WaveDrawable;
+import com.boukharist.speedyfingers.custom.animation.WaveTouchHelper;
+import com.boukharist.speedyfingers.model.LevelPagerEnum;
+import com.boukharist.speedyfingers.utils.Constants;
+import com.boukharist.speedyfingers.utils.SwissArmyKnife;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import xyz.hanks.library.SmallBang;
 import xyz.hanks.library.SmallBangListener;
 
-public class Main2Activity extends AppCompatActivity implements View.OnClickListener {
+public class MainMenuActivity extends AppCompatActivity implements View.OnClickListener, WaveTouchHelper.OnWaveTouchHelperListener {
 
 
     /**
@@ -57,18 +66,26 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         ButterKnife.bind(this);
 
 
-        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf",mSettingInfo,mSettingLeaderBoard,mSettingStatistics);
+        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf", mSettingInfo, mSettingLeaderBoard, mSettingStatistics);
 
         mPagerAdapter = new LevelSlidePagerAdapter(this);
         mPager.setAdapter(mPagerAdapter);
 
         mPager.setClipToPadding(false);
         mPager.setPadding(180, 0, 180, 0);
+        mPager.setPageMargin(50);
+
+
     }
 
     @Override
     public void onClick(View v) {
 
+
+    }
+
+    @Override
+    public void onWaveTouchUp(View view, Point locationInView, Point locationInScreen) {
 
     }
 
@@ -115,9 +132,16 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             View.OnClickListener clickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    click(view, position);
+                    //   click(view, position);
                 }
             };
+
+            WaveTouchHelper.bindWaveTouchHelper(button, new WaveTouchHelper.OnWaveTouchHelperListener() {
+                @Override
+                public void onWaveTouchUp(View view, Point locationInView, Point locationInScreen) {
+                    click(view, position, locationInView);
+                }
+            });
 
             button.setOnClickListener(clickListener);
 
@@ -125,10 +149,7 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
             return (page);
         }
 
-        private void click(View view, int position) {
-
-
-            final Intent intent = new Intent(Main2Activity.this, GameActivity.class);
+        private void click(View view, int position, final Point locationInScreen) {
             String difficulty = null;
             long time = 0;
             int[] pattern = new int[10];
@@ -160,15 +181,11 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
                     break;
             }
 
-
-            intent.putExtra("difficulty", difficulty);
-            intent.putExtra("time", time);
-            intent.putExtra("pattern", pattern);
+            int color = R.color.Aquamarine;
+            final Intent intent = generateIntent(difficulty, time, pattern, ContextCompat.getColor(MainMenuActivity.this,color));
 
 
-
-
-            SmallBang.attach2Window(Main2Activity.this).bang(view, new SmallBangListener() {
+            SmallBang.attach2Window(MainMenuActivity.this).bang(view, new SmallBangListener() {
                 @Override
                 public void onAnimationStart() {
 
@@ -176,9 +193,14 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
 
                 @Override
                 public void onAnimationEnd() {
-                    startActivity(intent);
+                    WaveCompat.startWaveFilter(MainMenuActivity.this,
+                            new WaveDrawable()
+                                    .setColor(0xff8B2252)
+                                    .setTouchPoint(locationInScreen),
+                            intent);
                 }
             });
+
 
         }
 
@@ -202,6 +224,18 @@ public class Main2Activity extends AppCompatActivity implements View.OnClickList
         public void onClick(View v) {
 
         }
+
+        private Intent generateIntent(String difficulty, long time, int[] pattern, int color) {
+            Intent intent = new Intent(MainMenuActivity.this, GameActivity.class);
+            intent.putExtra("difficulty", difficulty);
+            intent.putExtra("time", time);
+            intent.putExtra("pattern", pattern);
+            intent.putExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, color);
+
+            return intent;
+        }
+
+
     }
 
 

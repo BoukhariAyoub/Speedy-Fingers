@@ -1,8 +1,6 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.custom.views;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -30,11 +28,9 @@ public class DismissHandleEditText extends EditText {
 
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public DismissHandleEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
-
     }
 
     private void init() {
@@ -57,15 +53,12 @@ public class DismissHandleEditText extends EditText {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DEL) {
-            this.setText("");
+        //    this.setText("");
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    public void onEditorAction(int actionCode) {
-        super.onEditorAction(actionCode);
-    }
+
 
 
 }

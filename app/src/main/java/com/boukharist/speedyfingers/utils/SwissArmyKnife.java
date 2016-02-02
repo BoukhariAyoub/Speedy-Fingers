@@ -1,4 +1,4 @@
-package com.boukharist.speedyfingers;
+package com.boukharist.speedyfingers.utils;
 
 import android.content.Context;
 import android.graphics.Typeface;
