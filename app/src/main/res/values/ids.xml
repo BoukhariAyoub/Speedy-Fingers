@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_id">871477355305</string>
-    <string name="oAuth2ClientID">871477355305-gd044rekupq5mmpcnbtubv86kc7j5646.apps.googleusercontent.com</string>
+    <!--string name="oAuth2ClientID">871477355305-gd044rekupq5mmpcnbtubv86kc7j5646.apps.googleusercontent.com</string-->
+    <string name="oAuth2ClientID">871477355305-qal5hs4bjtdbvrbd9jc29e6c0cdpvke7.apps.googleusercontent.com</string>
 
 
 </resources>

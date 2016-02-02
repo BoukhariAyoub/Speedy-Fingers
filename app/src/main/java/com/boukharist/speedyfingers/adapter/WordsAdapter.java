@@ -153,7 +153,9 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
             }
         } else {//if current step does not exist
+
             mGameActivity.finish();
+            mGameActivity.levelFinished(1);
             //WON THE CURRENT LEVEL
         }
     }

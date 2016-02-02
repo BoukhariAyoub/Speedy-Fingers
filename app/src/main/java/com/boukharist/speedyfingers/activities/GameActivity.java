@@ -1,5 +1,6 @@
 package com.boukharist.speedyfingers.activities;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,17 +12,19 @@ import android.widget.TextView;
 
 import com.boukharist.speedyfingers.R;
 import com.boukharist.speedyfingers.adapter.WordsAdapter;
+import com.boukharist.speedyfingers.custom.animation.WaveCompat;
 import com.boukharist.speedyfingers.custom.views.AutoFitRecyclerView;
 import com.boukharist.speedyfingers.custom.views.CountingTextView;
 import com.boukharist.speedyfingers.custom.views.DismissHandleEditText;
 import com.boukharist.speedyfingers.utils.SwissArmyKnife;
+import com.google.android.gms.games.Games;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import jp.wasabeef.recyclerview.animators.FadeInAnimator;
+import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -41,12 +44,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
 
 
+        getWindow().setBackgroundDrawable(new ColorDrawable((getIntent().getIntExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, R.color.md_white_1000))));
+        //WaveCompat.transitionInitial(this, ABTextUtil.dip2px(context, 80), backgroundFromColor, Color.GRAY);
+
+
         // AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         RecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setItemAnimator(new FadeInAnimator());
+        recyclerView.setItemAnimator(new LandingAnimator());
 
         mBackTextView.setOnClickListener(this);
 
@@ -137,7 +144,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mScoreTextView.animateText(previous, mScore);
     }
 
-    public void levelFinished(){
-
+    public void levelFinished(int level){
+        Games.Achievements.unlock(MainMenuActivity.GoogleApiClient, getString(R.string.achievement_level_1_cleared));
     }
+
+
+
+
 }

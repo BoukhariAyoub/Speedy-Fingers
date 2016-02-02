@@ -1,36 +1,30 @@
 package com.boukharist.speedyfingers.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.VectorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 
 import com.boukharist.speedyfingers.R;
-import com.boukharist.speedyfingers.custom.animation.WaveCompat;
-import com.boukharist.speedyfingers.custom.animation.WaveDrawable;
+import com.boukharist.speedyfingers.adapter.LevelSlidePagerAdapter;
 import com.boukharist.speedyfingers.custom.animation.WaveTouchHelper;
-import com.boukharist.speedyfingers.model.LevelPagerEnum;
-import com.boukharist.speedyfingers.utils.Constants;
+import com.boukharist.speedyfingers.utils.BaseGameUtils;
 import com.boukharist.speedyfingers.utils.SwissArmyKnife;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import xyz.hanks.library.SmallBang;
-import xyz.hanks.library.SmallBangListener;
 
-public class MainMenuActivity extends AppCompatActivity implements View.OnClickListener, WaveTouchHelper.OnWaveTouchHelperListener {
+public class MainMenuActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        View.OnClickListener, WaveTouchHelper.OnWaveTouchHelperListener {
 
 
     /**
@@ -38,19 +32,41 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
      */
     private static final int NUM_PAGES = 5;
 
+    // Request code used to invoke sign in user interactions.
+    private static final int RC_SIGN_IN = 9001;
+
+
+    private static final int REQUEST_ACHIEVEMENTS = 9002;
+
+    // Client used to interact with Google APIs.
+    public static GoogleApiClient GoogleApiClient;
+
+    // Are we currently resolving a connection failure?
+    private boolean mResolvingConnectionFailure = false;
+
+    // Has the user clicked the sign-in button?
+    private boolean mSignInClicked = false;
+
+    final static String TAG = MainMenuActivity.class.getSimpleName();
+
+
     /**
      * The pager widget, which handles animation and allows swiping horizontally to access previous
      * and next wizard steps.
      */
     @Bind(R.id.levelViewPager)
     ViewPager mPager;
-
     @Bind(R.id.setting_info)
     Button mSettingInfo;
     @Bind(R.id.setting_leader_board)
     Button mSettingLeaderBoard;
     @Bind(R.id.setting_statistics)
     Button mSettingStatistics;
+    @Bind(R.id.sign_in_button)
+    SignInButton mGoogleSignInButton;
+    @Bind(R.id.achievement)
+    Button mAchievementButton;
+
 
     /**
      * The pager adapter, which provides the pages to the view pager widget.
@@ -61,10 +77,28 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         ButterKnife.bind(this);
 
+        if (GoogleApiClient == null) {
+            // Create the Google Api Client with access to Plus and Games
+            GoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                    .build();
+        }
+
+        if (GoogleApiClient.isConnected()) {
+            mGoogleSignInButton.setVisibility(View.GONE);
+            GoogleApiClient.getConnectionResult(Games.API);
+        } else {
+            mGoogleSignInButton.setOnClickListener(this);
+            mGoogleSignInButton.setVisibility(View.VISIBLE);
+        }
+
+
+        mAchievementButton.setOnClickListener(this);
 
         SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf", mSettingInfo, mSettingLeaderBoard, mSettingStatistics);
 
@@ -80,6 +114,16 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
+        if (v.getId() == mGoogleSignInButton.getId()) {
+            GoogleApiClient.connect();
+        }
+        if (v.getId() == mAchievementButton.getId()) {
+            if(GoogleApiClient.isConnected()){
+                startActivityForResult(Games.Achievements.getAchievementsIntent(GoogleApiClient),
+                        REQUEST_ACHIEVEMENTS);
+            }
+
+        }
 
 
     }
@@ -89,153 +133,61 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
-     */
-    private class LevelSlidePagerAdapter extends PagerAdapter implements View.OnClickListener {
 
-        private Context mContext;
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "onConnected() called. Sign in successful!");
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "onConnectionSuspended() called. Trying to reconnect.");
+        GoogleApiClient.connect();
+
+    }
 
 
-        public LevelSlidePagerAdapter(Context context) {
-            mContext = context;
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (mResolvingConnectionFailure) {
+            // Already resolving
+            return;
         }
 
-        @Override
-        public float getPageWidth(int position) {
-            return 1f;
+
+        mResolvingConnectionFailure = true;
+
+        // Attempt to resolve the connection failure using BaseGameUtils.
+        // The R.string.signin_other_error value should reference a generic
+        // error string in your strings.xml file, such as "There was
+        // an issue with sign in, please try again later."
+        if (!BaseGameUtils.resolveConnectionFailure(this,
+                GoogleApiClient, connectionResult,
+                RC_SIGN_IN, getString(R.string.signin_other_error))) {
+            mResolvingConnectionFailure = false;
         }
+        Log.d(TAG, "onConnectionFailed() called, result: " + connectionResult.getErrorMessage());
+    }
 
 
-        @Override
-        public Object instantiateItem(ViewGroup container, final int position) {
-            View page = getLayoutInflater().inflate(R.layout.level, container, false);
-
-
-            Button button = (Button) page.findViewById(R.id.button_level);
-            RelativeLayout ribbonLayout = (RelativeLayout) page.findViewById(R.id.ribbon_layout);
-
-
-            int titleResId = LevelPagerEnum.values()[position].getTitleResId();
-            int colorResId = LevelPagerEnum.values()[position].getColorResId();
-
-            VectorDrawable vectorDrawable = (VectorDrawable) button.getBackground();
-            PorterDuffColorFilter porterDuffColorFilter = new PorterDuffColorFilter(ContextCompat.getColor(mContext, colorResId),
-                    PorterDuff.Mode.SRC_ATOP);
-            vectorDrawable.setColorFilter(porterDuffColorFilter);
-
-            button.setText(titleResId);
-            container.addView(page);
-
-
-            View.OnClickListener clickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //   click(view, position);
-                }
-            };
-
-            WaveTouchHelper.bindWaveTouchHelper(button, new WaveTouchHelper.OnWaveTouchHelperListener() {
-                @Override
-                public void onWaveTouchUp(View view, Point locationInView, Point locationInScreen) {
-                    click(view, position, locationInView);
-                }
-            });
-
-            button.setOnClickListener(clickListener);
-
-
-            return (page);
-        }
-
-        private void click(View view, int position, final Point locationInScreen) {
-            String difficulty = null;
-            long time = 0;
-            int[] pattern = new int[10];
-            switch (position) {
-                case 0:
-                    difficulty = "easy";
-                    time = Constants.COUNTDOWN_TIME_EASY;
-                    pattern = Constants.PATTERN_LEVEL_1;
-                    break;
-                case 1:
-                    difficulty = "easy";
-                    time = Constants.COUNTDOWN_TIME_EASY;
-                    pattern = Constants.PATTERN_LEVEL_2;
-                    break;
-                case 2:
-                    difficulty = "easy";
-                    time = Constants.COUNTDOWN_TIME_EASY;
-                    pattern = Constants.PATTERN_LEVEL_3;
-                    break;
-                case 3:
-                    difficulty = "easy";
-                    time = Constants.COUNTDOWN_TIME_EASY;
-                    pattern = Constants.PATTERN_LEVEL_4;
-                    break;
-                case 4:
-                    difficulty = "easy";
-                    time = Constants.COUNTDOWN_TIME_EASY;
-                    pattern = Constants.PATTERN_LEVEL_5;
-                    break;
+    protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
+        if (requestCode == RC_SIGN_IN) {
+            Log.d(TAG, "onActivityResult with requestCode == RC_SIGN_IN, responseCode="
+                    + responseCode + ", intent=" + intent);
+            mSignInClicked = false;
+            mResolvingConnectionFailure = false;
+            if (responseCode == RESULT_OK) {
+                GoogleApiClient.connect();
+            } else {
+                Log.d(TAG, "sign in error other " + responseCode);
             }
-
-            int color = R.color.Aquamarine;
-            final Intent intent = generateIntent(difficulty, time, pattern, ContextCompat.getColor(MainMenuActivity.this,color));
-
-
-            SmallBang.attach2Window(MainMenuActivity.this).bang(view, new SmallBangListener() {
-                @Override
-                public void onAnimationStart() {
-
-                }
-
-                @Override
-                public void onAnimationEnd() {
-                    WaveCompat.startWaveFilter(MainMenuActivity.this,
-                            new WaveDrawable()
-                                    .setColor(0xff8B2252)
-                                    .setTouchPoint(locationInScreen),
-                            intent);
-                }
-            });
-
-
         }
 
-        @Override
-        public void destroyItem(ViewGroup collection, int position, Object view) {
-            collection.removeView((View) view);
+        if(requestCode == REQUEST_ACHIEVEMENTS){
+            Log.d(TAG, "onActivityResult with requestCode == RC_SIGN_IN, responseCode="
+                    + responseCode + ", intent=" + intent);
         }
-
-        @Override
-        public int getCount() {
-            return NUM_PAGES;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-
-        @Override
-        public void onClick(View v) {
-
-        }
-
-        private Intent generateIntent(String difficulty, long time, int[] pattern, int color) {
-            Intent intent = new Intent(MainMenuActivity.this, GameActivity.class);
-            intent.putExtra("difficulty", difficulty);
-            intent.putExtra("time", time);
-            intent.putExtra("pattern", pattern);
-            intent.putExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, color);
-
-            return intent;
-        }
-
-
     }
 
 

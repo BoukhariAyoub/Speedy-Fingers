@@ -100,6 +100,7 @@ public class WaveLoadingView extends View {
 
     private Context mContext;
 
+
     // Constructor & Init Method.
     public WaveLoadingView(final Context context) {
         this(context, null);
@@ -425,11 +426,14 @@ public class WaveLoadingView extends View {
         mProgressValue = progress;
         if (progress > 50) {
             setWaveColor(ContextCompat.getColor(getContext(), R.color.md_light_green_500));
-        } else if (progress > 20) {
-            setWaveColor(ContextCompat.getColor(getContext(), R.color.md_lime_500));
 
+
+        } else if (progress > 20) {
+            setWaveColor(ContextCompat.getColor(getContext(), R.color.md_amber_500));
+            setCenterTitleColor(ContextCompat.getColor(getContext(), R.color.md_white_1000));
         } else {
             setWaveColor(ContextCompat.getColor(getContext(), R.color.md_red_500));
+            setCenterTitleColor(ContextCompat.getColor(getContext(), R.color.md_white_1000));
         }
         ObjectAnimator waterLevelAnim = ObjectAnimator.ofFloat(this, "waterLevelRatio", mWaterLevelRatio, 1f - ((float) progress / 100));
         waterLevelAnim.setDuration(1000);

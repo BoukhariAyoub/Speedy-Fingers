@@ -462,6 +462,9 @@
         <color name="md_blue_grey_900">#263238</color>
 
 
+    <color name="alpha_black">#1A000000</color>
+
+
 
 
 </resources>

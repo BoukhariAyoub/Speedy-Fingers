@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/viewGroup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_teal_100"
@@ -17,16 +18,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:background="@drawable/hand_logo" />
+
     <TextView
-        android:layout_below="@+id/iv_logo"
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SPEEDY FINGERS"
+        android:layout_below="@+id/iv_logo"
         android:layout_centerHorizontal="true"
-        android:textStyle="bold"
+        android:text="SPEEDY FINGERS"
         android:textColor="@color/md_grey_50"
         android:textSize="30sp"
+        android:textStyle="bold"
 
         />
 
@@ -50,10 +52,25 @@
         android:layout_marginTop="10dp"
         android:background="@color/md_grey_100" />
 
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divider"
+        android:layout_centerInParent="true" />
+    <Button
+        android:id="@+id/achievement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/sign_in_button"
+        android:layout_alignBottom="@+id/sign_in_button"
+        android:text="acheivement"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/divider"
+        android:layout_below="@+id/sign_in_button"
         android:gravity="center"
         android:orientation="horizontal">
 
