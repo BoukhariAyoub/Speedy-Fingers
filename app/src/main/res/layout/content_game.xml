@@ -24,7 +24,7 @@
             android:layout_centerVertical="true"
             android:textSize="30sp"
             android:textStyle="bold"
-            android:text="BACK"/>
+            android:text="@string/fa_arrow_left"/>
 
         <com.boukharist.speedyfingers.custom.views.CountingTextView
             android:id="@+id/score"
@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/White"
             android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:fontFamily="Roboto-Medium"
             android:textSize="30sp"
             android:textStyle="bold"
@@ -56,6 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:inputType="textCapWords|textVisiblePassword"
+        android:textColor="@color/White"
         android:imeOptions="actionNone"/>
 
 </RelativeLayout>

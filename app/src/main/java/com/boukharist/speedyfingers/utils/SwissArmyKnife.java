@@ -1,9 +1,12 @@
 package com.boukharist.speedyfingers.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -82,7 +85,7 @@ public abstract class SwissArmyKnife {
     } */
 
 
-    public static String getStringFromFile(Context context, String filename,String separator) {
+    public static String getStringFromFile(Context context, String filename, String separator) {
         try {
             StringBuilder buf = new StringBuilder();
             InputStream json = context.getAssets().open(filename);
@@ -93,7 +96,7 @@ public abstract class SwissArmyKnife {
             }
 
             in.close();
-            return buf.substring(0,buf.length()-1);
+            return buf.substring(0, buf.length() - 1);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,14 +104,29 @@ public abstract class SwissArmyKnife {
         return null;
     }
 
-    public static void randomizeList(ArrayList list){
+    public static void randomizeList(ArrayList list) {
         long seed = System.nanoTime();
         Collections.shuffle(list, new Random(seed));
     }
 
-    public static void playSound(Context context,int sound){
-        final MediaPlayer mp = MediaPlayer.create(context,sound);
+    public static void playSound(Context context, int sound) {
+        final MediaPlayer mp = MediaPlayer.create(context, sound);
         mp.start();
+    }
+
+
+    public static SharedPreferences getPreferences(Context context, String name) {
+        return context.getSharedPreferences(name, Context.MODE_PRIVATE);
+    }
+
+    public static <T> T getObjectFromJson(String json, Class<T> tClass) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, tClass);
+    }
+
+    public static String getJsonFromObject(Object object) {
+        Gson gson = new Gson();
+        return gson.toJson(object);
     }
 
 

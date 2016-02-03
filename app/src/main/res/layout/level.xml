@@ -10,16 +10,26 @@
         android:layout_centerInParent="true"
         android:clickable="true">
 
+
         <Button
             android:id="@+id/button_level"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/ribbon_svg"
             android:text="LEVEL 1"
-            android:textColor="@color/White"
-            android:elevation="10dp">
+            android:textColor="@color/White" />
 
-        </Button>
+
+        <Button
+            android:id="@+id/lock"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:text="@string/fa_lock"
+            android:textColor="@color/md_blue_grey_700"
+            android:textSize="50sp"
+            android:visibility="gone"
+            android:gravity="bottom|end"/>
 
 
     </RelativeLayout>

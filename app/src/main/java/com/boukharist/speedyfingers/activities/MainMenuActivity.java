@@ -13,12 +13,17 @@ import android.widget.Button;
 import com.boukharist.speedyfingers.R;
 import com.boukharist.speedyfingers.adapter.LevelSlidePagerAdapter;
 import com.boukharist.speedyfingers.custom.animation.WaveTouchHelper;
+import com.boukharist.speedyfingers.model.Level;
 import com.boukharist.speedyfingers.utils.BaseGameUtils;
+import com.boukharist.speedyfingers.utils.PrefUtils;
 import com.boukharist.speedyfingers.utils.SwissArmyKnife;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,7 +75,6 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     SignInButton mGoogleSignInButton;
 
 
-
     /**
      * The pager adapter, which provides the pages to the view pager widget.
      */
@@ -92,21 +96,12 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
                     .build();
         }
 
-        if (GoogleApiClient.isConnected()) {
-            mGoogleSignInButton.setVisibility(View.GONE);
-            GoogleApiClient.getConnectionResult(Games.API);
-        } else {
-            mGoogleSignInButton.setOnClickListener(this);
-            mGoogleSignInButton.setVisibility(View.VISIBLE);
-        }
 
-
+        mLeaderBoardButton.setOnClickListener(this);
         mAchievementButton.setOnClickListener(this);
+        mInfoButton.setOnClickListener(this);
 
-        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf", mInfoButton, mLeaderBoardButton,mAchievementButton);
-
-        mPagerAdapter = new LevelSlidePagerAdapter(this);
-        mPager.setAdapter(mPagerAdapter);
+        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf", mInfoButton, mLeaderBoardButton, mAchievementButton);
 
         mPager.setClipToPadding(false);
         mPager.setPadding(180, 0, 180, 0);
@@ -121,14 +116,37 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
             GoogleApiClient.connect();
         }
         if (v.getId() == mAchievementButton.getId()) {
-            if(GoogleApiClient.isConnected()){
+            if (GoogleApiClient.isConnected()) {
                 startActivityForResult(Games.Achievements.getAchievementsIntent(GoogleApiClient),
                         REQUEST_ACHIEVEMENTS);
             }
-
+        }
+        if (v.getId() == mInfoButton.getId()) {
+            PrefUtils.clearPrefs(this);
+            onResume();
         }
 
+    }
 
+    public int mLastLevel;
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mPagerAdapter = new LevelSlidePagerAdapter(this, initLevels());
+        mPager.setAdapter(mPagerAdapter);
+
+        mPager.setCurrentItem(mLastLevel);
+
+
+
+        if (GoogleApiClient.isConnected()) {
+            mGoogleSignInButton.setVisibility(View.GONE);
+        } else {
+            GoogleApiClient.connect();
+            mGoogleSignInButton.setOnClickListener(this);
+            mGoogleSignInButton.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -187,10 +205,19 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
             }
         }
 
-        if(requestCode == REQUEST_ACHIEVEMENTS){
+        if (requestCode == REQUEST_ACHIEVEMENTS) {
             Log.d(TAG, "onActivityResult with requestCode == RC_SIGN_IN, responseCode="
                     + responseCode + ", intent=" + intent);
         }
+    }
+
+
+    public List<Level> initLevels() {
+        List<Level> levels = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            levels.add(Level.createLevel(this, i));
+        }
+        return levels;
     }
 
 

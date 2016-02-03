@@ -48,7 +48,8 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
         this.time = time;
         this.mLayoutManager = layoutManager;
         this.recyclerView = recyclerView;
-        pattern = activity.getIntent().getIntArrayExtra("pattern");
+
+        pattern = activity.getLevel().getPattern();
         currentIndex = pattern[currentStep] - 1;
 
         subList = new ArrayList<>();
@@ -147,15 +148,15 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
                             }
                         }
                     } else {//if next step does not exist ( LEVEL FINISHED )
+                        mGameActivity.levelFinished();
                         mGameActivity.finish();
                     }
                 }
 
             }
         } else {//if current step does not exist
-
+            mGameActivity.levelFinished();
             mGameActivity.finish();
-            mGameActivity.levelFinished(1);
             //WON THE CURRENT LEVEL
         }
     }

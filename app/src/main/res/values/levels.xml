@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="level_titles">
+        <item>LEVEL 1</item>
+        <item>LEVEL 2</item>
+        <item>LEVEL 3</item>
+        <item>LEVEL 4</item>
+        <item>LEVEL 5</item>
+    </string-array>
+
+
+</resources>

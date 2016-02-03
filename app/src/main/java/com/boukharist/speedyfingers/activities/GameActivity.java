@@ -16,6 +16,9 @@ import com.boukharist.speedyfingers.custom.animation.WaveCompat;
 import com.boukharist.speedyfingers.custom.views.AutoFitRecyclerView;
 import com.boukharist.speedyfingers.custom.views.CountingTextView;
 import com.boukharist.speedyfingers.custom.views.DismissHandleEditText;
+import com.boukharist.speedyfingers.model.Level;
+import com.boukharist.speedyfingers.utils.Constants;
+import com.boukharist.speedyfingers.utils.PrefUtils;
 import com.boukharist.speedyfingers.utils.SwissArmyKnife;
 import com.google.android.gms.games.Games;
 
@@ -31,6 +34,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     int mScore, mKeyStroke;
     WordsAdapter mAdapter;
+    Level mLevel;
+    Level mNextLevel;
+
+
     @Bind(R.id.back)
     TextView mBackTextView;
     @Bind(R.id.score)
@@ -45,7 +52,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
 
         getWindow().setBackgroundDrawable(new ColorDrawable((getIntent().getIntExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, R.color.md_white_1000))));
-        //WaveCompat.transitionInitial(this, ABTextUtil.dip2px(context, 80), backgroundFromColor, Color.GRAY);
 
 
         // AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
@@ -57,31 +63,32 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         mBackTextView.setOnClickListener(this);
 
-      //  getWindow().setBackgroundDrawable(new ColorDrawable((backgroundFromColor = getIntent().getIntExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, 0xff8B7D6B))));
-      //  WaveCompat.transitionDefaultInitial(this, ABTextUtil.dip2px(context, 80), backgroundFromColor, Color.GRAY);
-
-
+        SwissArmyKnife.setFontawesomeContainer("fonts/fontawesome.ttf", mBackTextView);
         String from = SwissArmyKnife.getStringFromFile(this, "eng.txt", ";");
         assert from != null;
 
         String[] words = getResources().getStringArray(R.array.words);
-        //  String[] splitted = from.split(";");
-
         final ArrayList<String> wordsList = new ArrayList<>(Arrays.asList(words));
         SwissArmyKnife.randomizeList(wordsList);
 
+        String levelJson = getIntent().getStringExtra("level");
+        String nextLevelJson = getIntent().getStringExtra("next_level");
 
-        long time = getIntent().getLongExtra("time", 0);
+
+        mLevel = SwissArmyKnife.getObjectFromJson(levelJson, Level.class);
+
+        if (nextLevelJson != null) {
+            mNextLevel = SwissArmyKnife.getObjectFromJson(nextLevelJson, Level.class);
+        }
+        long time = Constants.COUNTDOWN_TIME_EASY;
+
         mAdapter = new WordsAdapter(wordsList, this, time, layoutManager, recyclerView);
         recyclerView.setAdapter(mAdapter);
 
 
         final DismissHandleEditText mEditText = (DismissHandleEditText) findViewById(R.id.edit);
-
         mEditText.setFocusableInTouchMode(true);
         mEditText.requestFocus();
-
-
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -93,11 +100,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 if (!text.toString().isEmpty()) {
                     mKeyStroke++;
                 }
-                //   Log.d("natija", "key stroke " + mKeyStroke);
                 if (mAdapter.isWordHit(text.toString())) {
-                    //  mScore++;
                     mEditText.setText("");
-
                 }
             }
 
@@ -113,21 +117,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onPause();
         mAdapter.cancel();
         finish();
-        //  finish();
-        //  startActivity(new Intent(this,MainActivity.class));
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // mAdapter.cancel();
-        //  finish();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
 
@@ -144,11 +133,20 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mScoreTextView.animateText(previous, mScore);
     }
 
-    public void levelFinished(int level){
-        Games.Achievements.unlock(MainMenuActivity.GoogleApiClient, getString(R.string.achievement_level_1_cleared));
+    public void levelFinished() {
+        Games.Achievements.unlock(MainMenuActivity.GoogleApiClient, mLevel.getAchievementKey());
+        mLevel.setCleared(true);
+        mLevel.setScore(mScore);
+        PrefUtils.putLevelProgression(this, mLevel);
+
+        if (mNextLevel != null) {
+            mNextLevel.setPlayable(true);
+            PrefUtils.putLevelProgression(this, mNextLevel);
+        }
+
     }
 
-
-
-
+    public Level getLevel() {
+        return mLevel;
+    }
 }

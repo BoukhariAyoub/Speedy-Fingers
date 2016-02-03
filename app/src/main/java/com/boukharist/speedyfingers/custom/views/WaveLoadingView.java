@@ -23,7 +23,6 @@ import com.badoo.mobile.util.WeakHandler;
 import com.boukharist.speedyfingers.R;
 import com.boukharist.speedyfingers.activities.GameActivity;
 import com.boukharist.speedyfingers.adapter.WordsAdapter;
-import com.boukharist.speedyfingers.utils.PreciseCountdown;
 
 import xyz.hanks.library.SmallBang;
 import xyz.hanks.library.SmallBangListener;
@@ -426,14 +425,10 @@ public class WaveLoadingView extends View {
         mProgressValue = progress;
         if (progress > 50) {
             setWaveColor(ContextCompat.getColor(getContext(), R.color.md_light_green_500));
-
-
         } else if (progress > 20) {
             setWaveColor(ContextCompat.getColor(getContext(), R.color.md_amber_500));
-            setCenterTitleColor(ContextCompat.getColor(getContext(), R.color.md_white_1000));
         } else {
             setWaveColor(ContextCompat.getColor(getContext(), R.color.md_red_500));
-            setCenterTitleColor(ContextCompat.getColor(getContext(), R.color.md_white_1000));
         }
         ObjectAnimator waterLevelAnim = ObjectAnimator.ofFloat(this, "waterLevelRatio", mWaterLevelRatio, 1f - ((float) progress / 100));
         waterLevelAnim.setDuration(1000);

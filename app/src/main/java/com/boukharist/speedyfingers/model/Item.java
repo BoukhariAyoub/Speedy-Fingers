@@ -1,7 +1,7 @@
 package com.boukharist.speedyfingers.model;
 
 import com.boukharist.speedyfingers.custom.views.WaveLoadingView;
-import com.boukharist.speedyfingers.utils.PreciseCountdown;
+import com.boukharist.speedyfingers.custom.views.PreciseCountdown;
 
 /**
  * Created by Administrateur on 1/22/2016.

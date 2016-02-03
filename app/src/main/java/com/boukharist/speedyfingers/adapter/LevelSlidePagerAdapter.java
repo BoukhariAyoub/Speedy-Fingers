@@ -20,8 +20,12 @@ import com.boukharist.speedyfingers.activities.MainMenuActivity;
 import com.boukharist.speedyfingers.custom.animation.WaveCompat;
 import com.boukharist.speedyfingers.custom.animation.WaveDrawable;
 import com.boukharist.speedyfingers.custom.animation.WaveTouchHelper;
+import com.boukharist.speedyfingers.model.Level;
 import com.boukharist.speedyfingers.model.LevelPagerEnum;
 import com.boukharist.speedyfingers.utils.Constants;
+import com.boukharist.speedyfingers.utils.SwissArmyKnife;
+
+import java.util.List;
 
 import xyz.hanks.library.SmallBang;
 import xyz.hanks.library.SmallBangListener;
@@ -33,10 +37,11 @@ import xyz.hanks.library.SmallBangListener;
 public class LevelSlidePagerAdapter extends PagerAdapter implements View.OnClickListener {
 
     private MainMenuActivity mActivity;
+    List<Level> mLevelList;
 
-
-    public LevelSlidePagerAdapter(MainMenuActivity activity) {
+    public LevelSlidePagerAdapter(MainMenuActivity activity, List<Level> levels) {
         mActivity = activity;
+        mLevelList = levels;
     }
 
     @Override
@@ -51,10 +56,16 @@ public class LevelSlidePagerAdapter extends PagerAdapter implements View.OnClick
 
 
         Button button = (Button) page.findViewById(R.id.button_level);
+        Button lockTextView = (Button) page.findViewById(R.id.lock);
+
+        SwissArmyKnife.setFontawesomeContainer(Constants.FONT_AWESOME_PATH, lockTextView);
+
+        final Level currentLevel = mLevelList.get(position);
+        final Level nextLevel = position < mLevelList.size() - 1 ? mLevelList.get(position + 1) : null;
 
 
-        int titleResId = LevelPagerEnum.values()[position].getTitleResId();
-        int colorResId = LevelPagerEnum.values()[position].getColorResId();
+        String titleResId = currentLevel.getTitle();
+        int colorResId = currentLevel.getColor();
 
         VectorDrawable vectorDrawable = (VectorDrawable) button.getBackground();
         PorterDuffColorFilter porterDuffColorFilter = new PorterDuffColorFilter(ContextCompat.getColor(mActivity, colorResId),
@@ -62,59 +73,38 @@ public class LevelSlidePagerAdapter extends PagerAdapter implements View.OnClick
         vectorDrawable.setColorFilter(porterDuffColorFilter);
 
         button.setText(titleResId);
+
         container.addView(page);
 
 
-        WaveTouchHelper.bindWaveTouchHelper(button, new WaveTouchHelper.OnWaveTouchHelperListener() {
-            @Override
-            public void onWaveTouchUp(View view, Point locationInView, Point locationInScreen) {
-                click(view, position, locationInView);
+        if (currentLevel.isPlayable()) {
+            if (position > mActivity.mLastLevel) {
+                mActivity.mLastLevel = position;
             }
-        });
+            lockTextView.setVisibility(View.GONE);
+            WaveTouchHelper.bindWaveTouchHelper(button, new WaveTouchHelper.OnWaveTouchHelperListener() {
+                @Override
+                public void onWaveTouchUp(View view, Point locationInView, Point locationInScreen) {
+                    click(view, currentLevel, nextLevel, locationInView);
+                }
+            });
+        } else {
+            button.setText(R.string.fa_lock);
+            SwissArmyKnife.setFontawesomeContainer(Constants.FONT_AWESOME_PATH, button);
+            button.setTextSize(40);
+        }
 
 
         return (page);
     }
 
-    private void click(View view, int position, final Point locationInScreen) {
-        String difficulty = null;
-        long time = 0;
-        int[] pattern = new int[10];
-        switch (position) {
-            case 0:
-                difficulty = "easy";
-                time = Constants.COUNTDOWN_TIME_EASY;
-                pattern = Constants.PATTERN_LEVEL_1;
-                break;
-            case 1:
-                difficulty = "easy";
-                time = Constants.COUNTDOWN_TIME_EASY;
-                pattern = Constants.PATTERN_LEVEL_2;
-                break;
-            case 2:
-                difficulty = "easy";
-                time = Constants.COUNTDOWN_TIME_EASY;
-                pattern = Constants.PATTERN_LEVEL_3;
-                break;
-            case 3:
-                difficulty = "easy";
-                time = Constants.COUNTDOWN_TIME_EASY;
-                pattern = Constants.PATTERN_LEVEL_4;
-                break;
-            case 4:
-                difficulty = "easy";
-                time = Constants.COUNTDOWN_TIME_EASY;
-                pattern = Constants.PATTERN_LEVEL_5;
-                break;
-        }
-
-        int color = LevelPagerEnum.values()[position].getColorResId();
-        final Intent intent = generateIntent(difficulty, time, pattern, ContextCompat.getColor(mActivity, color));
+    private void click(View view, Level level, Level nextLevel, final Point locationInScreen) {
+        final Intent intent = generateIntent(level, nextLevel);
 
 
         WaveCompat.startWaveFilter(mActivity,
                 new WaveDrawable()
-                        .setColor(ContextCompat.getColor(mActivity, color))
+                        .setColor(ContextCompat.getColor(mActivity, level.getColor()))
                         .setTouchPoint(locationInScreen),
                 intent);
 
@@ -162,12 +152,11 @@ public class LevelSlidePagerAdapter extends PagerAdapter implements View.OnClick
 
     }
 
-    private Intent generateIntent(String difficulty, long time, int[] pattern, int color) {
+    private Intent generateIntent(Level level, Level nextLevel) {
         Intent intent = new Intent(mActivity, GameActivity.class);
-        intent.putExtra("difficulty", difficulty);
-        intent.putExtra("time", time);
-        intent.putExtra("pattern", pattern);
-        intent.putExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, color);
+        intent.putExtra("level", SwissArmyKnife.getJsonFromObject(level));
+        intent.putExtra("next_level", SwissArmyKnife.getJsonFromObject(nextLevel));
+        intent.putExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, ContextCompat.getColor(mActivity, level.getColor()));
 
         return intent;
     }
