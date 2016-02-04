@@ -1,5 +1,6 @@
 package com.boukharist.speedyfingers.activities;
 
+import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,6 +23,8 @@ import com.boukharist.speedyfingers.utils.Constants;
 import com.boukharist.speedyfingers.utils.PrefUtils;
 import com.boukharist.speedyfingers.utils.SwissArmyKnife;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMultiplayer;
+import com.google.android.gms.games.multiplayer.realtime.Room;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +40,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     WordsAdapter mAdapter;
     Level mLevel;
     Level mNextLevel;
+    Room mRoom;
+
+    public static Activity mGameActivity;
 
 
     @Bind(R.id.back)
@@ -52,6 +59,19 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
 
         getWindow().setBackgroundDrawable(new ColorDrawable((getIntent().getIntExtra(WaveCompat.IntentKey.BACKGROUND_COLOR, R.color.md_white_1000))));
+
+        String levelJson = getIntent().getStringExtra("level");
+        String nextLevelJson = getIntent().getStringExtra("next_level");
+
+        mRoom = getIntent().getParcelableExtra("room");
+
+        mGameActivity = this;
+
+        mLevel = SwissArmyKnife.getObjectFromJson(levelJson, Level.class);
+
+        if (nextLevelJson != null) {
+            mNextLevel = SwissArmyKnife.getObjectFromJson(nextLevelJson, Level.class);
+        }
 
 
         // AutoFitRecyclerView recyclerView = (AutoFitRecyclerView) findViewById(R.id.recycler);
@@ -71,16 +91,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         final ArrayList<String> wordsList = new ArrayList<>(Arrays.asList(words));
         SwissArmyKnife.randomizeList(wordsList);
 
-        String levelJson = getIntent().getStringExtra("level");
-        String nextLevelJson = getIntent().getStringExtra("next_level");
 
-
-        mLevel = SwissArmyKnife.getObjectFromJson(levelJson, Level.class);
-
-        if (nextLevelJson != null) {
-            mNextLevel = SwissArmyKnife.getObjectFromJson(nextLevelJson, Level.class);
-        }
         long time = Constants.COUNTDOWN_TIME_EASY;
+        Log.d("natija", " level " + mLevel);
+        Log.d("natija", " getlevel " + getLevel());
 
         mAdapter = new WordsAdapter(wordsList, this, time, layoutManager, recyclerView);
         recyclerView.setAdapter(mAdapter);
@@ -116,7 +130,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         mAdapter.cancel();
+        MainMenuActivity.mInstance.leaveRoom(mRoom);
         finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
 
@@ -134,7 +154,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void levelFinished() {
-        Games.Achievements.unlock(MainMenuActivity.GoogleApiClient, mLevel.getAchievementKey());
+
+        Log.d("natija", "level finished");
+        sendMessage("ended".getBytes());
+
+        Games.Achievements.unlock(MainMenuActivity.mGoogleApiClient, mLevel.getAchievementKey());
         mLevel.setCleared(true);
         mLevel.setScore(mScore);
         PrefUtils.putLevelProgression(this, mLevel);
@@ -148,5 +172,37 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     public Level getLevel() {
         return mLevel;
+    }
+
+
+    public void sendMessage(byte[] message) {
+
+        if (mRoom != null) {
+
+
+            RealTimeMultiplayer.ReliableMessageSentCallback callback = new RealTimeMultiplayer.ReliableMessageSentCallback() {
+                @Override
+                public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientParticipantId) {
+                    Log.d("natija", "statusCode : " + statusCode);
+                    Log.d("natija", "recipientParticipantId : " + recipientParticipantId);
+                }
+            };
+            String roomId = mRoom.getRoomId();
+
+            String myId = Games.Players.getCurrentPlayerId(MainMenuActivity.mGoogleApiClient);
+
+            for (String opponentId : mRoom.getParticipantIds()) {
+                if (!opponentId.equals(myId)) {
+                    Games.RealTimeMultiplayer.sendReliableMessage(MainMenuActivity.mGoogleApiClient, callback, message,
+                            roomId, opponentId);
+                }
+
+            }
+
+          /*  Games.RealTimeMultiplayer.sendUnreliableMessage(MainMenuActivity.mGoogleApiClient, message,
+                    roomId, opponentId);*/
+        }
+
+
     }
 }

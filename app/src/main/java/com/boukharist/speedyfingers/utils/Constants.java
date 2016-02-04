@@ -9,9 +9,9 @@ public class Constants {
     public static long COUNTDOWN_TIME_MEDIUM = 9000;
     public static long COUNTDOWN_TIME_HARD = 6000;
     public static long COUNTDOWN_TIME_EXTREME = 3000;
-    public static int[] PATTERN_LEVEL_1 = new int[]{1, 1};
-    public static int[] PATTERN_LEVEL_2 = new int[]{1, 1};
-    public static int[] PATTERN_LEVEL_3 = new int[]{1, 1};
+    public static int[] PATTERN_LEVEL_1 = new int[]{1,1,1,1};
+    public static int[] PATTERN_LEVEL_2 = new int[]{1, 1, 1};
+    public static int[] PATTERN_LEVEL_3 = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     public static int[] PATTERN_LEVEL_4 = new int[]{1, 1};
     public static int[] PATTERN_LEVEL_5 = new int[]{1, 1};
 

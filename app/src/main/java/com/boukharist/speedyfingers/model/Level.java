@@ -1,6 +1,7 @@
 package com.boukharist.speedyfingers.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.boukharist.speedyfingers.R;
 import com.boukharist.speedyfingers.utils.PrefUtils;
@@ -123,7 +124,7 @@ public class Level {
 
         PrefUtils.putLevelProgression(context, newLevel);
 
-
+        Log.d("natija", "level at " + position + " : " + newLevel);
         return newLevel;
     }
 }
