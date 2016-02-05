@@ -30,7 +30,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
     public static int[] pattern;
     public static int currentIndex; //current Index of main LIST
     public int currentStep = 0; // current step Index
-    int[] solvedByStep = new int[10]; //number of answers by step
+    int[] solvedByStep; //number of answers by step
     RecyclerView recyclerView;
     public GameActivity mGameActivity;
     public boolean isPause = false;
@@ -51,6 +51,7 @@ public class WordsAdapter extends RecyclerView.Adapter<WordsAdapter.WordsViewHol
 
         pattern = activity.getLevel().getPattern();
         currentIndex = pattern[currentStep] - 1;
+        solvedByStep = new int[pattern.length];
 
         subList = new ArrayList<>();
         for (int i = 0; i < pattern[currentStep]; i++) {

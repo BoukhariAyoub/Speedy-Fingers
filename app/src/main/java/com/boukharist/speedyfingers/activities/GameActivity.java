@@ -22,7 +22,9 @@ import com.boukharist.speedyfingers.model.Level;
 import com.boukharist.speedyfingers.utils.Constants;
 import com.boukharist.speedyfingers.utils.PrefUtils;
 import com.boukharist.speedyfingers.utils.SwissArmyKnife;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.achievement.Achievements;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMultiplayer;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 
@@ -158,7 +160,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("natija", "level finished");
         sendMessage("ended".getBytes());
 
-        Games.Achievements.unlock(MainMenuActivity.mGoogleApiClient, mLevel.getAchievementKey());
+        Log.d("natija", "unlock : " + mLevel.getAchievementKey());
+        Games.Achievements.unlockImmediate(MainMenuActivity.mGoogleApiClient, mLevel.getAchievementKey()).setResultCallback(new ResultCallback<Achievements.UpdateAchievementResult>() {
+            @Override
+            public void onResult(Achievements.UpdateAchievementResult result) {
+                Log.d("natija", result.getStatus().getStatusCode() + " " + result.getStatus().getStatusMessage());
+            }
+        });
+
         mLevel.setCleared(true);
         mLevel.setScore(mScore);
         PrefUtils.putLevelProgression(this, mLevel);
