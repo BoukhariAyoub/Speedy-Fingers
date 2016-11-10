@@ -164,6 +164,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
             if (mGoogleApiClient.isConnected()) {
                 startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient),
                         RC_ACHIEVEMENTS);
+
             }
         }
         if (v.getId() == mInfoButton.getId()) {
@@ -204,7 +205,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     public void onConnected(Bundle connectionHint) {
         Log.d(TAG, "onConnected() called. Sign in successful!");
 
-        Games.Invitations.registerInvitationListener(mGoogleApiClient, this);
+    //    Games.Invitations.registerInvitationListener(mGoogleApiClient, this);
 
         if (connectionHint != null) {
             Invitation inv =

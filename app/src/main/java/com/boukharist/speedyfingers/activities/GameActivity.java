@@ -94,7 +94,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         SwissArmyKnife.randomizeList(wordsList);
 
 
-        long time = Constants.COUNTDOWN_TIME_EASY;
+        long time = Constants.COUNTDOWN_TIME_HARD;
         Log.d("natija", " level " + mLevel);
         Log.d("natija", " getlevel " + getLevel());
 
